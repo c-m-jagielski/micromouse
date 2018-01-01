@@ -12,6 +12,7 @@ def createMaze(n=6):
     for k in range(0,n):
         for kk in range(0,n):
             maze.append([0,0,0,0])
+    #print "maze:", maze
 
     # The maze shall first start like this with the edges completed:
     #
@@ -29,6 +30,11 @@ def createMaze(n=6):
     # |                 |
     # +--+--+--+--+--+--+
 
+    for k in range(0,n):
+        maze[k][0] = 1 # North (top row)
+        maze[k][2] = 1 # South (bottom row)
+        maze[k*n][3] = 1 #West (left side)
+        maze[(k+1)*n-1][1] = 1 #East (right side)
 
 if __name__ == "__main__":
     print "creating a maze"
