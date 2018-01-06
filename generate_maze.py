@@ -35,9 +35,16 @@ def createMaze(n=6):
         maze[k*n][3] = 1 #West (left side)
         maze[(k+1)*n-1][1] = 1 #East (right side)
 
-    printMaze(maze, n)
-
     #TODO: fill in the center square walls with just 1 entrance
+    maze[14] = [1,0,0,1]
+    maze[15] = [1,1,0,0]
+    maze[20] = [0,0,1,1]
+    maze[21] = [0,1,0,0]
+
+    #TODO: open one wall for the maze entrance
+    #TODO: hard-code in other walls
+
+    printMaze(maze, n)
 
 def printMaze(maze, n):
     """
