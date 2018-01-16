@@ -46,8 +46,56 @@ def createMaze(n=6):
         print "ERROR: only supports n=6 at this time."
         return
 
-    #TODO: open one wall for the maze entrance
-    #TODO: hard-code in other walls
+    # Open one wall for the maze entrance (choose South wall on bottom row)
+    maze[(n*n-1)-1][2] = 0
+
+    # Hard-code in other walls
+    maze[0][2] = 1
+    maze[2][2] = 1
+    maze[4][1] = 1
+    maze[5][3] = 1
+
+    maze[6][0] = 1
+    maze[6][2] = 1
+    maze[7][1] = 1
+    maze[8][0] = 1
+    maze[8][2] = 1
+    maze[8][3] = 1
+    maze[9][1] = 1
+    maze[9][2] = 1
+    maze[10][2] = 1
+    maze[10][3] = 1
+
+    maze[12][0] = 1
+    maze[12][2] = 1
+    maze[13][1] = 1
+    maze[16][0] = 1
+    maze[16][2] = 1
+    maze[16][3] = 1
+
+    maze[18][0] = 1
+    maze[18][2] = 1
+    maze[19][1] = 1
+    maze[22][0] = 1
+    maze[22][2] = 1
+    maze[22][3] = 1
+
+    maze[24][0] = 1
+    maze[26][0] = 1
+    maze[26][2] = 1
+    maze[27][1] = 1
+    maze[27][2] = 1
+    maze[28][0] = 1
+    maze[28][3] = 1
+
+    maze[30][1] = 1
+    maze[31][1] = 1
+    maze[31][3] = 1
+    maze[32][0] = 1
+    maze[32][3] = 1
+    maze[33][0] = 1
+    maze[34][1] = 1
+    maze[35][3] = 1
 
     printMaze(maze, n)
 
