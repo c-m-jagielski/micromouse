@@ -70,5 +70,9 @@ if __name__ == "__main__":
     n = 6
     if args.n:
         n = args.n
+    if n%2:
+        n = n + 1
+    if n < 6:
+        n = 6
 
     createMaze(n)
