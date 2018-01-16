@@ -35,11 +35,16 @@ def createMaze(n=6):
         maze[k*n][3] = 1 #West (left side)
         maze[(k+1)*n-1][1] = 1 #East (right side)
 
-    #TODO: fill in the center square walls with just 1 entrance
+    # Fill in the center square walls with just 1 entrance
     maze[14] = [1,0,0,1]
     maze[15] = [1,1,0,0]
     maze[20] = [0,0,1,1]
     maze[21] = [0,1,0,0]
+
+    #TODO: add in some algorithm to actually fill in the maze walls
+    if n != 6:
+        print "ERROR: only supports n=6 at this time."
+        return
 
     #TODO: open one wall for the maze entrance
     #TODO: hard-code in other walls
