@@ -11,7 +11,7 @@ class SimulateMouse(object):
     """
 
     def __init__(self):
-        print "inside simulation..."
+        print("inside simulation...")
         # TODO: do I need anything here?
 
     def generateMazeMap(self, maze):
@@ -19,12 +19,12 @@ class SimulateMouse(object):
         maze
           An array (n*n x 4 size) that tells the existence of walls for each position in the maze
         """
-        print "now the 'mouse' is mapping out the maze..."
+        print("now the 'mouse' is mapping out the maze...")
         mazeKnowledge = []
         return mazeKnowledge
 
     def generateBestPath(self, mazeKnowledge):
-        print "now generating the best path..."
+        print("now generating the best path...")
         bestPath = []
         return bestPath
 
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     parser.add_argument('-n', type=int, help='The size of the maze, should be an even number.')
     args = parser.parse_args()
 
-    #print 'args:', args
+    #print('args: %s'%(str(args)))
 
     n = 6
     if args.n:
@@ -46,7 +46,7 @@ if __name__ == "__main__":
         n = 6
 
     # first generate the maze
-    print "now generating the maze..."
+    print("now generating the maze...")
     generateMaze = GenerateMaze()
     maze = generateMaze.createMaze(n)
 

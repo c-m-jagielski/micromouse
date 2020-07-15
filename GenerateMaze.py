@@ -7,7 +7,7 @@ import argparse
 class GenerateMaze(object):
 
     def createMaze(self, n=6):
-        print "Now creating a maze of size", n
+        print("Now creating a maze of size %i"%(n))
 
         # Make the maze structure be a list of lists (nXn, where each "spot" has a 4x1 list of 0/1 for NESW if a wall is present)
         # First, initialize the maze.
