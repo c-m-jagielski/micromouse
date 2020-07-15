@@ -29,7 +29,7 @@ class SimulateMouse(object):
         return bestPath
 
 if __name__ == "__main__":
-    print "simulating the maze!"
+    print("simulating the maze!")
 
     parser = argparse.ArgumentParser(description='Optional app description')
     parser.add_argument('-n', type=int, help='The size of the maze, should be an even number.')

@@ -1,5 +1,4 @@
 # python code to create a maze
-# by Chris
 
 # imports
 import argparse
@@ -46,7 +45,7 @@ class GenerateMaze(object):
 
         #TODO: add in some algorithm to actually fill in the maze walls
         if n != 6:
-            print "ERROR: only supports n=6 at this time."
+            print("ERROR: only supports n=6 at this time.")
             return
 
         # Open one wall for the maze entrance (choose South wall on bottom row)
@@ -110,18 +109,18 @@ class GenerateMaze(object):
             tmp = ""
             for kk in range(0,n):
                 tmp = tmp + str(maze[k*n+kk]) + " "
-                #print "k", k, "kk", kk, "maze[k+kk] = ", maze[k+kk]
-            print tmp
-            print ""
+                #print "k", k, "kk", kk, "maze[k+kk] = ", maze[k+kk]. #TODO update print statement
+            print(tmp)
+            print("")
 
 if __name__ == "__main__":
-    print "creating a maze"
+    print("creating a maze")
 
     parser = argparse.ArgumentParser(description='Optional app description')
     parser.add_argument('-n', type=int, help='The size of the maze, should be an even number.')
     args = parser.parse_args()
 
-    #print 'args:', args
+    #print('args: %s'%(str(args)))
 
     n = 6
     if args.n:
