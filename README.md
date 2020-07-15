@@ -10,7 +10,7 @@ Code components:
  * solve for best path to center (Flood fill?)
 
 # TODO list
-What's in the docket?
+What's on the docket?
  * add real unit tests into test_class for pytest to use
  * add pre-built mazes of multiple sizes (to enable repeatable testing)
  * make a mechanism to generate a random maze (must follow maze rules)
