@@ -16,15 +16,38 @@ class SimulateMouse(object):
 
     def generateMazeMap(self, maze):
         """
+        Walk through the maze space-by-space to determine where the walls are.
+        Output is a map describing the walls that have been discovered.
+
         maze
           An array (n*n x 4 size) that tells the existence of walls for each position in the maze
         """
+
         print("now the 'mouse' is mapping out the maze...")
         mazeKnowledge = []
         return mazeKnowledge
 
     def generateBestPath(self, mazeKnowledge):
+        """
+        Using the knowledge about the maze, solve for the optimum path through it.
+
+        mazeKnowledge
+          Input: Map describing the walls that have been discovered.
+          Dictionary. Key is the space, value is a list of 0/1 for NEWS if a wall is present. Note -1 is used for unknown.
+          Example: {0:[0,1,1,1], 1:[0,1,-1,1]} #this example is incomplete
+
+        bestPath
+          Output: List of actions to take in each space; actions are integers.
+          Assume you start at the start/entry space in the maze.
+          E.g. go forward 3 spaces, right 1 space, right 1 space, left, forward, left, forward, etc.
+          'Forward' = 0
+          'Left' = -1
+          'Right = 1
+        """
+
         print("now generating the best path...")
+
+        #bestPath = [0,0,0,1,1,-1,0,-1,1]. #example
         bestPath = []
         return bestPath
 
@@ -37,6 +60,7 @@ if __name__ == "__main__":
 
     #print('args: %s'%(str(args)))
 
+    # needs to be 2x2, 4x4, or 6x6
     n = 6
     if args.n:
         n = args.n
