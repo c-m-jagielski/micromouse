@@ -47,7 +47,28 @@ class GenerateMaze(object):
         # +  +  +  +
         # | s|     |
         # +--+--+--+
+        #
+        # I'm going to always assume the bottom left is the start
+        # Then we'll index the grid like this:
+        # +--+--+--+
+        # | 0  1  2|
+        # +  +--+  +
+        # | 3| 4| 5|
+        # +  +  +  +
+        # | 6| 7  8|
+        # +--+--+--+
+        # Obviously we know 4 is the center of a 3x3 but we don't know the path so we have to search for it and store it
 
+        #maze[i] = [N,E,S,W]
+        maze[0] = [1,0,0,1]
+        maze[1] = [1,0,1,0]
+        maze[2] = [1,1,0,0]
+        maze[3] = [0,1,0,1]
+        maze[4] = [1,1,0,1]
+        maze[5] = [0,1,0,1]
+        maze[6] = [0,1,1,1]
+        maze[7] = [0,0,1,1]
+        maze[8] = [0,1,1,0]
 
         """
         for k in range(0,n):
