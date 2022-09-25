@@ -11,7 +11,8 @@ class GenerateMaze(object):
         #TODO: add in some algorithm to actually fill in the maze walls
         if n != 3:
             print("ERROR: only supports n=3 at this time.")
-            return
+            #return
+            n = 3
 
         # Make the maze structure be a list of lists (nXn, where each "spot" has a 4x1 list of 0/1 for NESW if a wall is present)
         # First, initialize the maze.
@@ -161,7 +162,7 @@ if __name__ == "__main__":
     # Assume 3x3 maze since it's easiest
     n = 3
     if args.n:
-        n = args.n
+        n = abs(args.n)
     if n%2:
         pass
     else:
