@@ -5,8 +5,13 @@ import argparse
 
 class GenerateMaze(object):
 
-    def createMaze(self, n=6):
+    def createMaze(self, n=3):
         print("Now creating a maze of size %i"%(n))
+
+        #TODO: add in some algorithm to actually fill in the maze walls
+        if n != 3:
+            print("ERROR: only supports n=3 at this time.")
+            return
 
         # Make the maze structure be a list of lists (nXn, where each "spot" has a 4x1 list of 0/1 for NESW if a wall is present)
         # First, initialize the maze.
@@ -31,6 +36,20 @@ class GenerateMaze(object):
         # |                 |
         # +--+--+--+--+--+--+
 
+        # This is my first 3x3 example
+        # "s" = start
+        # "c" = center
+        #
+        # +--+--+--+
+        # |        |
+        # +  +--+  +
+        # |  | c|  |
+        # +  +  +  +
+        # | s|     |
+        # +--+--+--+
+
+
+        """
         for k in range(0,n):
             maze[k][0] = 1 # North (top row)
             maze[n*n-1-k][2] = 1 # South (bottom row)
@@ -42,11 +61,6 @@ class GenerateMaze(object):
         maze[15] = [1,1,0,0]
         maze[20] = [0,0,1,1]
         maze[21] = [0,1,0,0]
-
-        #TODO: add in some algorithm to actually fill in the maze walls
-        if n != 6:
-            print("ERROR: only supports n=6 at this time.")
-            return
 
         # Open one wall for the maze entrance (choose South wall on bottom row)
         maze[(n*n-1)-1][2] = 0
@@ -98,6 +112,7 @@ class GenerateMaze(object):
         maze[33][0] = 1
         maze[34][1] = 1
         maze[35][3] = 1
+        """
 
         self.printMaze(maze, n)
 
@@ -117,18 +132,19 @@ if __name__ == "__main__":
     print("creating a maze")
 
     parser = argparse.ArgumentParser(description='Optional app description')
-    parser.add_argument('-n', type=int, help='The size of the maze, should be an even number.')
+    parser.add_argument('-n', type=int, help='The size of the maze, should be an odd number.')
     args = parser.parse_args()
 
     #print('args: %s'%(str(args)))
 
-    n = 6
+    # Assume 3x3 maze since it's easiest
+    n = 3
     if args.n:
         n = args.n
     if n%2:
+        pass
+    else:
         n = n + 1
-    if n < 6:
-        n = 6
 
     generateMaze = GenerateMaze()
     generateMaze.createMaze(n)

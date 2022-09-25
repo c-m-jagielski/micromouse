@@ -20,11 +20,17 @@ class SimulateMouse(object):
         Output is a map describing the walls that have been discovered.
 
         maze
-          An array (n*n x 4 size) that tells the existence of walls for each position in the maze
+          Input: An array (n*n x 4 size) that tells the existence of walls for each position in the maze
+
+        mazeKnowledge
+          Output: Map describing the walls that have been discovered.
         """
 
         print("now the 'mouse' is mapping out the maze...")
         mazeKnowledge = []
+
+        # 
+
         return mazeKnowledge
 
     def generateBestPath(self, mazeKnowledge):
@@ -60,14 +66,15 @@ if __name__ == "__main__":
 
     #print('args: %s'%(str(args)))
 
-    # needs to be 2x2, 4x4, or 6x6
-    n = 6
+    # needs to be 3x3 or 5x5
+    n = 3
     if args.n:
         n = args.n
-    if n%2:
+    if n%2: pass
+    else:
         n = n + 1
-    if n < 6:
-        n = 6
+    if n > 5: n = 5
+    if n < 3: n = 3
 
     # first generate the maze
     print("now generating the maze...")
