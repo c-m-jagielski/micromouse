@@ -29,7 +29,15 @@ class SimulateMouse(object):
         print("now the 'mouse' is mapping out the maze...")
         mazeKnowledge = []
 
-        # 
+        # iterate through the maze and map out every space we can
+        centerFound = 0
+        index = 0
+        while not centerFound:
+
+          print "maze step:", maze[index]
+
+          index += 1
+          centerFound = 1
 
         return mazeKnowledge
 
@@ -55,6 +63,10 @@ class SimulateMouse(object):
 
         #bestPath = [0,0,0,1,1,-1,0,-1,1]. #example
         bestPath = [0,0,0,0,0,0,0,0,0] # load with defaut
+
+        # iterate through the maze information and solve it!
+        #TODO
+
         return bestPath
 
 if __name__ == "__main__":

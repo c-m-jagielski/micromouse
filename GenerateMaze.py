@@ -138,6 +138,7 @@ class GenerateMaze(object):
         """
 
         self.printMaze(maze, n)
+        return maze
 
     def printMaze(self, maze, n):
         """
