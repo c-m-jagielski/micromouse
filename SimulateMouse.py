@@ -31,13 +31,14 @@ class SimulateMouse(object):
 
         # mouse will iterate through the maze and map out every space we can
         centerFound = 0  #stop when you find the center
-        index = 0  #keep track of your current spot, start at 6 for our sample 3x3 maze
+        index = 6  #keep track of your current spot, start at 6 for our sample 3x3 maze
         while not centerFound:
-          print "maze step:", maze[index]
+          #print "maze step:", maze[index]
 
           # TODO get sensor data from the robot
 
           index += 1
+          # stop mapping out the maze walls after you find the center
           centerFound = 1
 
         return mazeKnowledge
@@ -63,11 +64,56 @@ class SimulateMouse(object):
         print("now generating the best path...")
 
         #bestPath = [0,0,0,1,1,-1,0,-1,1]. #example
-        bestPath = [0,0,0,0,0,0,0,0,0] # load with defaut
+        bestPath = [7,7,7,7,7,7,7,7,7] # load with garbage
 
         # iterate through the maze information and solve it!
-        #TODO
+        centerFound = 0  #stop when you find the center
+        index = 0  #keep track of your index in the best path
+        currentSpot = 6  #start at grid space #6 on our sample 3x3
+        previousSpots = []  #track all spots in the maze we've been to
+        theAnswer = [6,3,0,1,2,5,8,7,4]
 
+        while not centerFound:
+          print "maze step:", mazeKnowledge[currentSpot]
+
+          if index > 0:
+            #TODO keep track of the new current spot...
+            pass
+          previousSpots.append(currentSpot)
+
+          # get sensor data from the robot at the current spot
+          wallsHere = mazeKnowledge[currentSpot]
+
+          next = -1 #start out we don't know what to do next
+
+          # walls are [N,E,S,W]
+          # which directions are available?
+          north = not wallsHere[0]
+          east = not wallsHere[1]
+          south = not wallsHere[2]
+          west = not wallsHere[3]
+
+          # what's possible? 15 total moves
+          # N, E, S, W, NE, NW, NS, EW, ES, SW, NEW, NES, NWS, EWS, NEWS
+
+          # dumb algorithm, just go with whatever we first find is open
+          # forward=0, right=1, left=1, backward=99
+          if north: bestPath[index] = 0
+          elif east: bestPath[index] = 1
+          elif west: bestPath[index] = -1
+          elif south: bestPath[index] = 99
+          else: print "help me!"
+
+          index += 1
+          if index==9:
+            centerFound = 1
+            break
+
+          # OK what is the next space going to be???
+          # TODO figure this out another way? How should I get this feedback?
+          currentSpot = theAnswer[index]
+
+        print "bestPath:", bestPath
         return bestPath
 
 if __name__ == "__main__":
