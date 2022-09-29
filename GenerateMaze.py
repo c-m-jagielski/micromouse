@@ -72,6 +72,7 @@ class GenerateMaze(object):
         maze[8] = [0,1,1,0]
 
         """
+        # All this is for an old example of a 4x4, not sure I want to keep this though. Odd 'n' values seem better.
         for k in range(0,n):
             maze[k][0] = 1 # North (top row)
             maze[n*n-1-k][2] = 1 # South (bottom row)

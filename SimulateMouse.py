@@ -54,7 +54,7 @@ class SimulateMouse(object):
         print("now generating the best path...")
 
         #bestPath = [0,0,0,1,1,-1,0,-1,1]. #example
-        bestPath = []
+        bestPath = [0,0,0,0,0,0,0,0,0] # load with defaut
         return bestPath
 
 if __name__ == "__main__":
@@ -85,3 +85,14 @@ if __name__ == "__main__":
     simulateMouse = SimulateMouse()
     mazeKnowledge = simulateMouse.generateMazeMap(maze)
     bestPath = simulateMouse.generateBestPath(mazeKnowledge)
+
+    # for my first example 3x3, compare against the known solution:
+    solutionExample1 = [0,0,1,0,1,0,1,1]
+
+    # check for success
+    success = 0
+    for i in range(0, len(bestPath)):
+      if bestPath[i] != solutionExample1[i]:
+        print "Error on step", i, "in the maze. Guessed", bestPath[i], ", was", solutionExample1[i]
+        break
+    if success: print("Success! We did it!")
