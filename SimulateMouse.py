@@ -29,12 +29,13 @@ class SimulateMouse(object):
         print("now the 'mouse' is mapping out the maze...")
         mazeKnowledge = []
 
-        # iterate through the maze and map out every space we can
-        centerFound = 0
-        index = 0
+        # mouse will iterate through the maze and map out every space we can
+        centerFound = 0  #stop when you find the center
+        index = 0  #keep track of your current spot, start at 6 for our sample 3x3 maze
         while not centerFound:
-
           print "maze step:", maze[index]
+
+          # TODO get sensor data from the robot
 
           index += 1
           centerFound = 1
@@ -95,8 +96,9 @@ if __name__ == "__main__":
 
     # now run the simulation
     simulateMouse = SimulateMouse()
-    mazeKnowledge = simulateMouse.generateMazeMap(maze)
-    bestPath = simulateMouse.generateBestPath(mazeKnowledge)
+    mazeKnowledge = simulateMouse.generateMazeMap(maze) #TODO this is the same as "generateMaze"
+    #bestPath = simulateMouse.generateBestPath(mazeKnowledge) #TODO use if we get real robot information
+    bestPath = simulateMouse.generateBestPath(maze)
 
     # for my first example 3x3, compare against the known solution:
     solutionExample1 = [0,0,1,0,1,0,1,1]
