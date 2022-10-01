@@ -144,7 +144,7 @@ class SimulateMouse(object):
           # N, E, S, W, NE, NW, NS, EW, ES, SW, NEW, NES, NWS, EWS, NEWS
 
           # dumb algorithm, just go with whatever we first find is open
-          # forward=0, right=1, left=1, backward=99
+          # forward=0, right=1, left=-1, backward=99
           if north: bestPath[index] = 0
           elif east: bestPath[index] = 1
           elif west: bestPath[index] = -1
