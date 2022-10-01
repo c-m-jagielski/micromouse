@@ -113,7 +113,7 @@ class SimulateMouse(object):
         print("now generating the best path...")
 
         #bestPath = [0,0,0,1,1,-1,0,-1,1]. #example
-        bestPath = [7,7,7,7,7,7,7,7,7] # load with garbage
+        bestPath = [7,7,7,7,7,7,7,7] # load with garbage
 
         # iterate through the maze information and solve it!
         centerFound = 0  #stop when you find the center
@@ -143,6 +143,12 @@ class SimulateMouse(object):
           behind = not wallsHere[2]
           left = not wallsHere[3]
 
+          # are we in the center? Yes if behind us is the only open spot
+          if behind and (not ahead and not right and not left):
+            print "Found the center!"
+            centerFound = 1
+            break
+
           # what's possible? 15 total moves
           # N, E, S, W, NE, NW, NS, EW, ES, SW, NEW, NES, NWS, EWS, NEWS
 
@@ -155,9 +161,6 @@ class SimulateMouse(object):
           else: print "help me!"
 
           index += 1
-          if index==9:
-            centerFound = 1
-            break
 
           # OK what is the next space going to be???
           # TODO figure this out another way? How should I get this feedback?
