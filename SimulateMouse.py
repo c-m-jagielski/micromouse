@@ -132,12 +132,29 @@ class SimulateMouse(object):
           # get sensor data from the robot at the current spot
           wallsHere = mazeKnowledge[currentSpot]
 
-          # walls are [N,E,S,W]
+          # walls are stored in global [N,E,S,W] frame of reference, not relative direction
           # which directions are available to move to?
-          ahead = not wallsHere[0]
-          right = not wallsHere[1]
-          behind = not wallsHere[2]
-          left = not wallsHere[3]
+          ahead = right = behind = left = -99 #initialize vars
+          if myDirection == self.NORTH:
+            ahead = not wallsHere[0]
+            right = not wallsHere[1]
+            behind = not wallsHere[2]
+            left = not wallsHere[3]
+          if myDirection == self.EAST:
+            left = not wallsHere[0]
+            ahead = not wallsHere[1]
+            right = not wallsHere[2]
+            behind = not wallsHere[3]
+          if myDirection == self.WEST:
+            right = not wallsHere[0]
+            behind = not wallsHere[1]
+            left = not wallsHere[2]
+            ahead = not wallsHere[3]
+          if myDirection == self.SOUTH:
+            behind = not wallsHere[0]
+            left = not wallsHere[1]
+            ahead = not wallsHere[2]
+            right = not wallsHere[3]
 
           # are we in the center? Yes if behind us is the only open spot
           if behind and (not ahead and not right and not left):
@@ -207,6 +224,6 @@ if __name__ == "__main__":
     success = 0
     for i in range(0, len(bestPath)):
       if bestPath[i] != solutionExample1[i]:
-        print "Error on step", i, "in the maze. Guessed", bestPath[i], ", was", solutionExample1[i]
+        print "Error on step", i, "in the maze. Guessed", bestPath[i], "was", solutionExample1[i]
         break
     if success: print("Success! We did it!")
