@@ -12,7 +12,15 @@ class SimulateMouse(object):
 
     def __init__(self):
         print("inside simulation...")
-        # TODO: do I need anything here?
+
+        NORTH = 0
+        EAST = 1
+        SOUTH = 2
+        WEST = 3
+        FORWARD = 4
+        LEFT = 5
+        RIGHT = 6
+        REVERSE = 99
 
     def generateMazeMap(self, maze):
         """
@@ -49,9 +57,10 @@ class SimulateMouse(object):
           Input: North=0, East=1, South=2, West=3
 
         newMovement
-          Input:
+          Input: North=0, East=1, South=2, West=3
+
+        Output: North=0, East=1, South=2, West=3
         """
-        newDirection = -1
 
         if currentDirection == 0:
           if newMovement == 0: return 0
@@ -59,15 +68,24 @@ class SimulateMouse(object):
           if newMovement == 2: return 2
           if newMovement == 3: return 3
         elif currentDirection == 1:
-          pass
+          if newMovement == 0: return 0
+          if newMovement == 1: return 0
+          if newMovement == 2: return 0
+          if newMovement == 3: return 0
         elif currentDirection == 2:
-          pass
+          if newMovement == 0: return 0
+          if newMovement == 1: return 0
+          if newMovement == 2: return 0
+          if newMovement == 3: return 0
         elif currentDirection == 3:
-          pass
+          if newMovement == 0: return 0
+          if newMovement == 1: return 0
+          if newMovement == 2: return 0
+          if newMovement == 3: return 0
         else:
           print "Directional Error, bad input direction given:", currentDirection
+        return 0  # just default to North if something went wrong...
 
-        return newDirection
 
     def generateBestPath(self, mazeKnowledge):
         """
