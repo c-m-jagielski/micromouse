@@ -67,23 +67,21 @@ class SimulateMouse(object):
         Output: NORTH, EAST, SOUTH, WEST
         """
 
+        if newMovement == self.FORWARD: return currentDirection
+
         if currentDirection == self.NORTH:
-          if newMovement == self.FORWARD: return self.NORTH
           if newMovement == self.LEFT: return self.WEST
           if newMovement == self.RIGHT: return self.EAST
           if newMovement == self.REVERSE: return self.SOUTH
-        elif currentDirection == EAST:
-          if newMovement == self.FORWARD: return self.EAST
+        elif currentDirection == self.EAST:
           if newMovement == self.LEFT: return self.NORTH
           if newMovement == self.RIGHT: return self.SOUTH
           if newMovement == self.REVERSE: return self.WEST
-        elif currentDirection == SOUTH:
-          if newMovement == self.FORWARD: return self.SOUTH
+        elif currentDirection == self.SOUTH:
           if newMovement == self.LEFT: return self.EAST
           if newMovement == self.RIGHT: return self.WEST
           if newMovement == self.REVERSE: return self.NORTH
-        elif currentDirection == WEST:
-          if newMovement == self.FORWARD: return self.WEST
+        elif currentDirection == self.WEST:
           if newMovement == self.LEFT: return self.SOUTH
           if newMovement == self.RIGHT: return self.NORTH
           if newMovement == self.REVERSE: return self.EAST
@@ -159,6 +157,10 @@ class SimulateMouse(object):
           elif left: bestPath[index] = self.LEFT
           elif behind: bestPath[index] = self.REVERSE
           else: print "help me!"
+
+          # turn based on the new movement
+          tmp = self.turn(myDirection, bestPath[index])
+          myDirection = tmp
 
           index += 1
 
