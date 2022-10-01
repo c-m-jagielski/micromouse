@@ -10,21 +10,22 @@ class SimulateMouse(object):
     Simulate the mouse... go through the maze and map it out (discover walls) then solve the best path
     """
 
+    # Define global variables
+    NORTH = 0
+    EAST = 1
+    SOUTH = 2
+    WEST = 3
+    FORWARD = 4
+    LEFT = 5
+    RIGHT = 6
+    REVERSE = 99
+    F = FORWARD
+    L = LEFT
+    R = RIGHT
+    V = REVERSE
+
     def __init__(self):
         print("inside the simulation...")
-
-        NORTH = 0
-        EAST = 1
-        SOUTH = 2
-        WEST = 3
-        FORWARD = 4
-        LEFT = 5
-        RIGHT = 6
-        REVERSE = 99
-        F = FORWARD
-        L = LEFT
-        R = RIGHT
-        V = REVERSE
 
     def generateMazeMap(self, maze):
         """
@@ -147,10 +148,10 @@ class SimulateMouse(object):
 
           # dumb algorithm, just go with whatever we first find is open
           # forward=0, right=1, left=-1, backward=99
-          if ahead: bestPath[index] = 0
-          elif right: bestPath[index] = 1
-          elif left: bestPath[index] = -1
-          elif behind: bestPath[index] = 99
+          if ahead: bestPath[index] = self.FORWARD
+          elif right: bestPath[index] = self.RIGHT
+          elif left: bestPath[index] = self.LEFT
+          elif behind: bestPath[index] = self.REVERSE
           else: print "help me!"
 
           index += 1
@@ -190,13 +191,13 @@ if __name__ == "__main__":
     maze = generateMaze.createMaze(n)
 
     # now run the simulation
-    simulateMouse = SimulateMouse()
-    mazeKnowledge = simulateMouse.generateMazeMap(maze) #TODO this is the same as "generateMaze"
-    #bestPath = simulateMouse.generateBestPath(mazeKnowledge) #TODO use if we get real robot information
-    bestPath = simulateMouse.generateBestPath(maze)
+    sm = SimulateMouse()
+    mazeKnowledge = sm.generateMazeMap(maze) #TODO this is the same as "generateMaze"
+    #bestPath = sm.generateBestPath(mazeKnowledge) #TODO use if we get real robot information
+    bestPath = sm.generateBestPath(maze)
 
     # for my first example 3x3, compare against the known solution:
-    solutionExample1 = [0,0,1,0,1,0,1,1]
+    solutionExample1 = [sm.F,sm.F,sm.R,sm.F,sm.R,sm.F,sm.R,sm.R]
     print "solution:", solutionExample1
 
     # check for success
