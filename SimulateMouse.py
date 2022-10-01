@@ -119,7 +119,7 @@ class SimulateMouse(object):
         currentSpot = 6  #start at grid space #6 on our sample 3x3
         previousSpots = []  #track all spots in the maze we've been to
         theAnswer = [6,3,0,1,2,5,8,7,4]
-        myDirection = 0  #North=0, East=1, South=2, West=3; start by default facing North
+        myDirection = self.NORTH  #start by default facing North
 
         while not centerFound:
           print "maze step #", index, ":", mazeKnowledge[currentSpot]
@@ -132,10 +132,8 @@ class SimulateMouse(object):
           # get sensor data from the robot at the current spot
           wallsHere = mazeKnowledge[currentSpot]
 
-          next = -1 #start out we don't know what to do next
-
           # walls are [N,E,S,W]
-          # which directions are available?
+          # which directions are available to move to?
           ahead = not wallsHere[0]
           right = not wallsHere[1]
           behind = not wallsHere[2]
@@ -151,7 +149,6 @@ class SimulateMouse(object):
           # N, E, S, W, NE, NW, NS, EW, ES, SW, NEW, NES, NWS, EWS, NEWS
 
           # dumb algorithm, just go with whatever we first find is open
-          # forward=0, right=1, left=-1, backward=99
           if ahead: bestPath[index] = self.FORWARD
           elif right: bestPath[index] = self.RIGHT
           elif left: bestPath[index] = self.LEFT
@@ -161,11 +158,12 @@ class SimulateMouse(object):
           # turn based on the new movement
           tmp = self.turn(myDirection, bestPath[index])
           myDirection = tmp
+          print "  new direction:", myDirection
 
           index += 1
 
           # OK what is the next space going to be???
-          # TODO figure this out another way? How should I get this feedback?
+          # TODO figure this out without hard-coded answer... take current spot and direction and calculate new spot
           currentSpot = theAnswer[index]
 
         print "bestPath:", bestPath
