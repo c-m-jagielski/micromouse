@@ -11,7 +11,7 @@ class SimulateMouse(object):
     """
 
     def __init__(self):
-        print("inside simulation...")
+        print("inside the simulation...")
 
         NORTH = 0
         EAST = 1
@@ -21,6 +21,10 @@ class SimulateMouse(object):
         LEFT = 5
         RIGHT = 6
         REVERSE = 99
+        F = FORWARD
+        L = LEFT
+        R = RIGHT
+        V = REVERSE
 
     def generateMazeMap(self, maze):
         """
@@ -133,22 +137,20 @@ class SimulateMouse(object):
 
           # walls are [N,E,S,W]
           # which directions are available?
-          ####Need to figure out what direction we're facing and then get this rotated
-
-          north = not wallsHere[0]
-          east = not wallsHere[1]
-          south = not wallsHere[2]
-          west = not wallsHere[3]
+          ahead = not wallsHere[0]
+          right = not wallsHere[1]
+          behind = not wallsHere[2]
+          left = not wallsHere[3]
 
           # what's possible? 15 total moves
           # N, E, S, W, NE, NW, NS, EW, ES, SW, NEW, NES, NWS, EWS, NEWS
 
           # dumb algorithm, just go with whatever we first find is open
           # forward=0, right=1, left=-1, backward=99
-          if north: bestPath[index] = 0
-          elif east: bestPath[index] = 1
-          elif west: bestPath[index] = -1
-          elif south: bestPath[index] = 99
+          if ahead: bestPath[index] = 0
+          elif right: bestPath[index] = 1
+          elif left: bestPath[index] = -1
+          elif behind: bestPath[index] = 99
           else: print "help me!"
 
           index += 1
