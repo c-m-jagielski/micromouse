@@ -54,34 +54,34 @@ class SimulateMouse(object):
     def turn(self, currentDirection, newMovement):
         """
         currentDirection
-          Input: North=0, East=1, South=2, West=3
+          Input: NORTH, EAST, SOUTH, WEST
 
         newMovement
-          Input: North=0, East=1, South=2, West=3
+          Input: FORWARD, LEFT, RIGHT, REVERSE
 
-        Output: North=0, East=1, South=2, West=3
+        Output: NORTH, EAST, SOUTH, WEST
         """
 
-        if currentDirection == 0:
-          if newMovement == 0: return 0
-          if newMovement == 1: return 1
-          if newMovement == 2: return 2
-          if newMovement == 3: return 3
-        elif currentDirection == 1:
-          if newMovement == 0: return 0
-          if newMovement == 1: return 0
-          if newMovement == 2: return 0
-          if newMovement == 3: return 0
-        elif currentDirection == 2:
-          if newMovement == 0: return 0
-          if newMovement == 1: return 0
-          if newMovement == 2: return 0
-          if newMovement == 3: return 0
-        elif currentDirection == 3:
-          if newMovement == 0: return 0
-          if newMovement == 1: return 0
-          if newMovement == 2: return 0
-          if newMovement == 3: return 0
+        if currentDirection == self.NORTH:
+          if newMovement == self.FORWARD: return self.NORTH
+          if newMovement == self.LEFT: return self.WEST
+          if newMovement == self.RIGHT: return self.EAST
+          if newMovement == self.REVERSE: return self.SOUTH
+        elif currentDirection == EAST:
+          if newMovement == self.FORWARD: return self.EAST
+          if newMovement == self.LEFT: return self.NORTH
+          if newMovement == self.RIGHT: return self.SOUTH
+          if newMovement == self.REVERSE: return self.WEST
+        elif currentDirection == SOUTH:
+          if newMovement == self.FORWARD: return self.SOUTH
+          if newMovement == self.LEFT: return self.EAST
+          if newMovement == self.RIGHT: return self.WEST
+          if newMovement == self.REVERSE: return self.NORTH
+        elif currentDirection == WEST:
+          if newMovement == self.FORWARD: return self.WEST
+          if newMovement == self.LEFT: return self.SOUTH
+          if newMovement == self.RIGHT: return self.NORTH
+          if newMovement == self.REVERSE: return self.EAST
         else:
           print "Directional Error, bad input direction given:", currentDirection
         return 0  # just default to North if something went wrong...
