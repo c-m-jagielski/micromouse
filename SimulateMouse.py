@@ -43,6 +43,32 @@ class SimulateMouse(object):
 
         return mazeKnowledge
 
+    def turn(self, currentDirection, newMovement):
+        """
+        currentDirection
+          Input: North=0, East=1, South=2, West=3
+
+        newMovement
+          Input:
+        """
+        newDirection = -1
+
+        if currentDirection == 0:
+          if newMovement == 0: return 0
+          if newMovement == 1: return 1
+          if newMovement == 2: return 2
+          if newMovement == 3: return 3
+        elif currentDirection == 1:
+          pass
+        elif currentDirection == 2:
+          pass
+        elif currentDirection == 3:
+          pass
+        else:
+          print "Directional Error, bad input direction given:", currentDirection
+
+        return newDirection
+
     def generateBestPath(self, mazeKnowledge):
         """
         Using the knowledge about the maze, solve for the optimum path through it.
@@ -72,9 +98,10 @@ class SimulateMouse(object):
         currentSpot = 6  #start at grid space #6 on our sample 3x3
         previousSpots = []  #track all spots in the maze we've been to
         theAnswer = [6,3,0,1,2,5,8,7,4]
+        myDirection = 0  #North=0, East=1, South=2, West=3; start by default facing North
 
         while not centerFound:
-          print "maze step:", mazeKnowledge[currentSpot]
+          print "maze step #", index, ":", mazeKnowledge[currentSpot]
 
           if index > 0:
             #TODO keep track of the new current spot...
@@ -88,6 +115,8 @@ class SimulateMouse(object):
 
           # walls are [N,E,S,W]
           # which directions are available?
+          ####Need to figure out what direction we're facing and then get this rotated
+
           north = not wallsHere[0]
           east = not wallsHere[1]
           south = not wallsHere[2]
@@ -148,6 +177,7 @@ if __name__ == "__main__":
 
     # for my first example 3x3, compare against the known solution:
     solutionExample1 = [0,0,1,0,1,0,1,1]
+    print "solution:", solutionExample1
 
     # check for success
     success = 0
