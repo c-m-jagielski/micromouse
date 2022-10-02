@@ -89,6 +89,34 @@ class SimulateMouse(object):
           print "Directional Error, bad input direction given:", currentDirection
         return 0  # just default to North if something went wrong...
 
+    def availableMoves(self, myDirection, wallsHere):
+        """
+          Walls are stored in global [N,E,S,W] frame of reference, not relative direction
+          Which directions are available to move to?
+        """
+
+        ahead = right = behind = left = -99 #initialize vars
+        if myDirection == self.NORTH:
+          ahead = not wallsHere[0]
+          right = not wallsHere[1]
+          behind = not wallsHere[2]
+          left = not wallsHere[3]
+        if myDirection == self.EAST:
+          left = not wallsHere[0]
+          ahead = not wallsHere[1]
+          right = not wallsHere[2]
+          behind = not wallsHere[3]
+        if myDirection == self.WEST:
+          right = not wallsHere[0]
+          behind = not wallsHere[1]
+          left = not wallsHere[2]
+          ahead = not wallsHere[3]
+        if myDirection == self.SOUTH:
+          behind = not wallsHere[0]
+          left = not wallsHere[1]
+          ahead = not wallsHere[2]
+          right = not wallsHere[3]
+        return [ahead, right, behind, left]
 
     def generateBestPath(self, mazeKnowledge):
         """
@@ -134,27 +162,7 @@ class SimulateMouse(object):
 
           # walls are stored in global [N,E,S,W] frame of reference, not relative direction
           # which directions are available to move to?
-          ahead = right = behind = left = -99 #initialize vars
-          if myDirection == self.NORTH:
-            ahead = not wallsHere[0]
-            right = not wallsHere[1]
-            behind = not wallsHere[2]
-            left = not wallsHere[3]
-          if myDirection == self.EAST:
-            left = not wallsHere[0]
-            ahead = not wallsHere[1]
-            right = not wallsHere[2]
-            behind = not wallsHere[3]
-          if myDirection == self.WEST:
-            right = not wallsHere[0]
-            behind = not wallsHere[1]
-            left = not wallsHere[2]
-            ahead = not wallsHere[3]
-          if myDirection == self.SOUTH:
-            behind = not wallsHere[0]
-            left = not wallsHere[1]
-            ahead = not wallsHere[2]
-            right = not wallsHere[3]
+          ahead, right, behind, left = self.availableMoves(myDirection, wallsHere)
 
           # are we in the center? Yes if behind us is the only open spot
           if behind and (not ahead and not right and not left):
