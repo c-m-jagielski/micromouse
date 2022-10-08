@@ -145,7 +145,7 @@ class SimulateMouse(object):
 
         #TODO set up for 5x5 grid, too
 
-        print "***** oldSpot:", oldSpot, "direction:", direction, "*****"
+        #print "***** oldSpot:", oldSpot, "direction:", direction, "*****"
 
         if oldSpot == 0:
           if direction==self.E: return 1
@@ -212,7 +212,6 @@ class SimulateMouse(object):
         index = 0  #keep track of your index in the best path
         currentSpot = 6  #start at grid space #6 on our sample 3x3
         previousSpots = []  #track all spots in the maze we've been to
-        theAnswer = [6,3,0,1,2,5,8,7,4]
         myDirection = self.NORTH  #start by default facing North
 
         while not centerFound:
@@ -249,13 +248,12 @@ class SimulateMouse(object):
           # turn based on the new movement to calculate new heading
           tmp = self.turn(myDirection, bestPath[index])
           myDirection = tmp
-          print "  new direction:", myDirection
+          #print "  new direction:", myDirection
 
           # OK what is the next space going to be???
           tmp = self.findNewSpot(currentSpot, myDirection)
-          print "NEW current spot = ", currentSpot, "  ... guess = ", tmp
+          #print "NEW current spot = ", currentSpot, "  ... guess = ", tmp
           currentSpot = tmp
-          #currentSpot = theAnswer[index+1]
 
           index += 1
 
