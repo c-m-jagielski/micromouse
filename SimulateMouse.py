@@ -145,6 +145,8 @@ class SimulateMouse(object):
 
         #TODO set up for 5x5 grid, too
 
+        print "***** oldSpot:", oldSpot, "direction:", direction, "*****"
+
         if oldSpot == 0:
           if direction==self.E: return 1
           if direction==self.S: return 3
@@ -244,18 +246,18 @@ class SimulateMouse(object):
           elif behind: bestPath[index] = self.REVERSE
           else: print "help me!"
 
-          # turn based on the new movement
+          # turn based on the new movement to calculate new heading
           tmp = self.turn(myDirection, bestPath[index])
           myDirection = tmp
           print "  new direction:", myDirection
 
-          index += 1
-
           # OK what is the next space going to be???
-          currentSpot = theAnswer[index]
           tmp = self.findNewSpot(currentSpot, myDirection)
           print "NEW current spot = ", currentSpot, "  ... guess = ", tmp
-          #currentSpot = tmp
+          currentSpot = tmp
+          #currentSpot = theAnswer[index+1]
+
+          index += 1
 
         print "bestPath:", bestPath
         return bestPath
