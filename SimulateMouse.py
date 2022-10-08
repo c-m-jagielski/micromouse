@@ -118,6 +118,28 @@ class SimulateMouse(object):
           right = not wallsHere[3]
         return [ahead, right, behind, left]
 
+    def findNewSpot(self, oldSpot, direction):
+        """
+        Calcuate the new spot we're going to be in based on where we currently are and our movement will be
+
+        oldSpot
+          Input: current grid spot
+
+          +--+--+--+
+          | 0  1  2|
+          +  +--+  +
+          | 3| 4| 5|
+          +  +  +  +
+          | 6| 7  8|
+          +--+--+--+
+
+        direction
+          Input: N, E, S, W
+
+        Return: the new spot in the grid
+        """
+        return 1
+
     def generateBestPath(self, mazeKnowledge):
         """
         Using the knowledge about the maze, solve for the optimum path through it.
@@ -188,8 +210,10 @@ class SimulateMouse(object):
           index += 1
 
           # OK what is the next space going to be???
-          # TODO figure this out without hard-coded answer... take current spot and direction and calculate new spot
           currentSpot = theAnswer[index]
+          tmp = self.findNewSpot(currentSpot, myDirection)
+          print "NEW current spot = ", currentSpot, "  ... guess = ", tmp
+          #currentSpot = tmp
 
         print "bestPath:", bestPath
         return bestPath
