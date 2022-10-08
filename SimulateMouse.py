@@ -23,6 +23,10 @@ class SimulateMouse(object):
     L = LEFT
     R = RIGHT
     V = REVERSE
+    N = NORTH
+    E = EAST
+    S = SOUTH
+    W = WEST
 
     def __init__(self):
         print("inside the simulation...")
@@ -138,6 +142,44 @@ class SimulateMouse(object):
 
         Return: the new spot in the grid
         """
+
+        #TODO set up for 5x5 grid, too
+
+        if oldSpot == 0:
+          if direction==self.E: return 1
+          if direction==self.S: return 3
+        elif oldSpot == 1:
+          if direction==self.E: return 2
+          if direction==self.S: return 4
+          if direction==self.W: return 0
+        elif oldSpot == 2:
+          if direction==self.S: return 5
+          if direction==self.W: return 1
+        elif oldSpot == 3:
+          if direction==self.N: return 0
+          if direction==self.E: return 4
+          if direction==self.S: return 6
+        elif oldSpot == 4:
+          if direction==self.N: return 1
+          if direction==self.E: return 5
+          if direction==self.S: return 7
+          if direction==self.W: return 3
+        elif oldSpot == 5:
+          if direction==self.N: return 2
+          if direction==self.S: return 8
+          if direction==self.W: return 4
+        elif oldSpot == 6:
+          if direction==self.N: return 3
+          if direction==self.E: return 7
+        elif oldSpot == 7:
+          if direction==self.N: return 4
+          if direction==self.E: return 8
+          if direction==self.W: return 6
+        elif oldSpot == 8:
+          if direction==self.N: return 5
+          if direction==self.W: return 7
+        else: pass
+        print "ERROR in findNewSpot()"
         return 1
 
     def generateBestPath(self, mazeKnowledge):
