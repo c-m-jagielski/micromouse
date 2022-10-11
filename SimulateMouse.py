@@ -255,14 +255,16 @@ class SimulateMouse(object):
               deadend.append(currentSpot)
 
           # what's possible? 15 total moves
-          # N, E, S, W, NE, NW, NS, EW, ES, SW, NEW, NES, NWS, EWS, NEWS
+          # F, R, V, L, FR, FL, FV, LR, RV, VL, FLR, FRV, FLV, LRV, FLRV
+          #
+          # what if you ignore what's open behind you (since you just came from there), unless reverse is the only option
+          # F, R, L, V, FR, FL, LR, FLR
 
           # with randomness, go with whatever we find is open
           #TODO smartly choose one that we have not gone to before
-          #TODO add in the other options here
-          if ahead and right and left and behind:
-            # all options are available
-            r = random.randint(self.FORWARD, self.REVERSE)
+          if ahead and right and left:
+            # all options are available; do not go Reverse, that doesn't help
+            r = random.randint(self.FORWARD, self.RIGHT)
             bestPath.append(r)
           elif ahead and left:
             r = random.randint(0, 1)
@@ -271,6 +273,10 @@ class SimulateMouse(object):
           elif ahead and right:
             r = random.randint(0, 1)
             if r==0: bestPath.append(self.FORWARD)
+            else: bestPath.append(self.RIGHT)
+          elif left and right:
+            r = random.randint(0, 1)
+            if r==0: bestPath.append(self.LEFT)
             else: bestPath.append(self.RIGHT)
           elif ahead: bestPath.append(self.FORWARD)
           elif right: bestPath.append(self.RIGHT)
