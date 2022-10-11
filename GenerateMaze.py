@@ -31,19 +31,17 @@ class GenerateMaze(object):
 
         # The maze shall first start like this with the edges completed:
         #
-        # +--+--+--+--+--+--+
-        # |                 |
-        # +  +  +  +  +  +  +
-        # |                 |
-        # +  +  +  +  +  +  +
-        # |                 |
-        # +  +  +  +  +  +  +
-        # |                 |
-        # +  +  +  +  +  +  +
-        # |                 |
-        # +  +  +  +  +  +  +
-        # |                 |
-        # +--+--+--+--+--+--+
+        # +--+--+--+--+--+
+        # |              |
+        # +  +  +  +  +  +
+        # |              |
+        # +  +  +  +  +  +
+        # |      c       |
+        # +  +  +  +  +  +
+        # |              |
+        # +  +  +  +  +  +
+        # |              |
+        # +--+--+--+--+--+
 
         # This is my first 3x3 example
         # "s" = start
