@@ -259,6 +259,7 @@ class SimulateMouse(object):
 
           # with randomness, go with whatever we find is open
           #TODO smartly choose one that we have not gone to before
+          #TODO add in the other options here
           if ahead and right and left and behind:
             # all options are available
             r = random.randint(self.FORWARD, self.REVERSE)
@@ -288,6 +289,8 @@ class SimulateMouse(object):
           currentSpot = tmp
 
           index += 1
+
+        #TODO now that I have _a_ path to the center, find the _best_ path to the center
 
         print "bestPath:", bestPath
         return bestPath
