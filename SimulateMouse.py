@@ -258,11 +258,19 @@ class SimulateMouse(object):
           # N, E, S, W, NE, NW, NS, EW, ES, SW, NEW, NES, NWS, EWS, NEWS
 
           # with randomness, go with whatever we find is open
+          #TODO smartly choose one that we have not gone to before
           if ahead and right and left and behind:
             # all options are available
-            #TODO smartly choose one that we have not gone to before
             r = random.randint(self.FORWARD, self.REVERSE)
             bestPath.append(r)
+          elif ahead and left:
+            r = random.randint(0, 1)
+            if r==0: bestPath.append(self.FORWARD)
+            else: bestPath.append(self.LEFT)
+          elif ahead and right:
+            r = random.randint(0, 1)
+            if r==0: bestPath.append(self.FORWARD)
+            else: bestPath.append(self.RIGHT)
           elif ahead: bestPath.append(self.FORWARD)
           elif right: bestPath.append(self.RIGHT)
           elif left: bestPath.append(self.LEFT)
