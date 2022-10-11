@@ -5,8 +5,16 @@ import argparse
 
 class GenerateMaze(object):
 
-    def createMaze(self, n=3):
-        print("Now creating a maze of size %i"%(n))
+    def createMaze(self, n=3, example=1):
+        """
+        n
+          Input: [integer] maze size, must be either 3 or 5 (TODO: 5 not yet supported)
+
+        example
+          Input: [integer] user select the pre-coded example; -1 means "random"
+        """
+
+        print("Now creating a maze of size %i. Using example %i"%(n, example))
 
         #TODO: add in some algorithm to actually fill in the maze walls
         if n != 3:
@@ -59,17 +67,41 @@ class GenerateMaze(object):
         # | 6| 7  8|
         # +--+--+--+
         # Obviously we know 4 is the center of a 3x3 but we don't know the path so we have to search for it and store it
+        #
+        # Example #2 - start at 6
+        # +--+--+--+
+        # | 0  1  2|
+        # +--+  +  +
+        # | 3| 4| 5|
+        # +  +--+  +
+        # | 6  7  8|
+        # +--+--+--+
+        #
 
         #maze[i] = [N,E,S,W]
-        maze[0] = [1,0,0,1]
-        maze[1] = [1,0,1,0]
-        maze[2] = [1,1,0,0]
-        maze[3] = [0,1,0,1]
-        maze[4] = [1,1,0,1]
-        maze[5] = [0,1,0,1]
-        maze[6] = [0,1,1,1]
-        maze[7] = [0,0,1,1]
-        maze[8] = [0,1,1,0]
+
+        if example==1:
+          maze[0] = [1,0,0,1]
+          maze[1] = [1,0,1,0]
+          maze[2] = [1,1,0,0]
+          maze[3] = [0,1,0,1]
+          maze[4] = [1,1,0,1]
+          maze[5] = [0,1,0,1]
+          maze[6] = [0,1,1,1]
+          maze[7] = [0,0,1,1]
+          maze[8] = [0,1,1,0]
+        elif example==2:
+          maze[0] = [1,0,1,1]
+          maze[1] = [1,0,0,0]
+          maze[2] = [1,1,0,0]
+          maze[3] = [1,1,0,1]
+          maze[4] = [0,1,1,1]
+          maze[5] = [0,1,0,1]
+          maze[6] = [0,0,1,1]
+          maze[7] = [1,0,1,0]
+          maze[8] = [0,1,1,0]
+        else:
+          print "ERROR: example maze not supported"
 
         """
         # All this is for an old example of a 4x4, not sure I want to keep this though. Odd 'n' values seem better.
@@ -157,6 +189,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Optional app description')
     parser.add_argument('-n', type=int, help='The size of the maze, should be an odd number.')
+    parser.add_argument('-x', type=int, help='The example you want to run, e.g. 1 or 2.')
     args = parser.parse_args()
 
     #print('args: %s'%(str(args)))
@@ -170,5 +203,9 @@ if __name__ == "__main__":
     else:
         n = n + 1
 
+    example = 1
+    if args.x:
+        example = abs(args.x)
+
     generateMaze = GenerateMaze()
-    generateMaze.createMaze(n)
+    generateMaze.createMaze(n, example)
