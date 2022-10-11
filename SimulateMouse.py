@@ -282,7 +282,7 @@ if __name__ == "__main__":
     # first generate the maze
     print("now generating the maze...")
     generateMaze = GenerateMaze()
-    maze = generateMaze.createMaze(n)
+    maze = generateMaze.createMaze(n, example=1)
 
     # now run the simulation
     sm = SimulateMouse()
@@ -295,9 +295,10 @@ if __name__ == "__main__":
     print "solution:", solutionExample1
 
     # check for success
-    success = 0
+    success = 1
     for i in range(0, len(bestPath)):
       if bestPath[i] != solutionExample1[i]:
         print "Error on step", i, "in the maze. Guessed", bestPath[i], "was", solutionExample1[i]
+        success = 0
         break
     if success: print("Success! We did it!")
