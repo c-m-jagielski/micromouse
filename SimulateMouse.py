@@ -28,8 +28,10 @@ class SimulateMouse(object):
     S = SOUTH
     W = WEST
 
-    def __init__(self):
+    def __init__(self, n=3):
         print("inside the simulation...")
+
+        self.mazeSize = n  #can be 3x3 or 5x5
 
     def generateMazeMap(self, maze):
         """
@@ -222,12 +224,18 @@ class SimulateMouse(object):
         previousSpots = []  #track all spots in the maze we've been to
         myDirection = self.NORTH  #start by default facing North
 
+        # what is the center spot?
+        center = -1
+        if self.mazeSize == 3: center = 4
+        elif self.mazeSize == 5: center = 99
+        else:
+          print "ERROR: maze size not supported"
+          return
+
         while not centerFound:
           print "\n\nmaze step #", index, ":", mazeKnowledge[currentSpot]
 
-          if index > 0:
-            #TODO keep track of the new current spot...
-            pass
+          # store the spots to which we've been
           previousSpots.append(currentSpot)
 
           # get sensor data from the robot at the current spot
@@ -298,7 +306,7 @@ if __name__ == "__main__":
     maze = generateMaze.createMaze(n, example)
 
     # now run the simulation
-    sm = SimulateMouse()
+    sm = SimulateMouse(n)
     mazeKnowledge = sm.generateMazeMap(maze) #TODO this is the same as "generateMaze"
     #bestPath = sm.generateBestPath(mazeKnowledge) #TODO use if we get real robot information
     bestPath = sm.generateBestPath(maze)
