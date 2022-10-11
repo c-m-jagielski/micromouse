@@ -2,7 +2,7 @@
 # this will be my main function
 
 # imports
-import argparse
+import argparse, random
 from GenerateMaze import GenerateMaze
 
 class SimulateMouse(object):
@@ -18,7 +18,7 @@ class SimulateMouse(object):
     FORWARD = 4
     LEFT = 5
     RIGHT = 6
-    REVERSE = 99
+    REVERSE = 7
     F = FORWARD
     L = LEFT
     R = RIGHT
@@ -257,12 +257,17 @@ class SimulateMouse(object):
           # what's possible? 15 total moves
           # N, E, S, W, NE, NW, NS, EW, ES, SW, NEW, NES, NWS, EWS, NEWS
 
-          # dumb algorithm, just go with whatever we first find is open
-          if ahead: bestPath.append(self.FORWARD)
+          # with randomness, go with whatever we find is open
+          if ahead and right and left and behind:
+            # all options are available
+            #TODO smartly choose one that we have not gone to before
+            r = random.randint(self.FORWARD, self.REVERSE)
+            bestPath.append(r)
+          elif ahead: bestPath.append(self.FORWARD)
           elif right: bestPath.append(self.RIGHT)
           elif left: bestPath.append(self.LEFT)
           elif behind: bestPath.append(self.REVERSE)
-          else: print "help me!"
+          else: print "help me I'm trapped!"
 
           # turn based on the new movement to calculate new heading
           tmp = self.turn(myDirection, bestPath[index])
