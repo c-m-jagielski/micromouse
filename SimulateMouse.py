@@ -223,6 +223,7 @@ class SimulateMouse(object):
         currentSpot = 6  #start at grid space #6 on our sample 3x3
         previousSpots = []  #track all spots in the maze we've been to
         myDirection = self.NORTH  #start by default facing North
+        deadend = []  #track all dead-end spots
 
         # what is the center spot?
         center = -1
@@ -247,9 +248,13 @@ class SimulateMouse(object):
 
           # are we in the center? Yes if behind us is the only open spot
           if behind and (not ahead and not right and not left):
-            print "Found the center!"
-            centerFound = 1
-            break
+            if currentSpot == center:
+              print "Found the center!"
+              centerFound = 1
+              break
+            else:
+              print "Found a deadend at spot ", currentSpot
+              deadend.append(currentSpot)
 
           # what's possible? 15 total moves
           # N, E, S, W, NE, NW, NS, EW, ES, SW, NEW, NES, NWS, EWS, NEWS
