@@ -213,9 +213,7 @@ class SimulateMouse(object):
         """
 
         print("now discovering the best path...")
-
-        #bestPath = [0,0,0,1,1,-1,0,-1,1]. #example
-        bestPath = [7,7,7,7,7,7,7,7] # load with garbage
+        bestPath = []  #initialize our return variable
 
         # iterate through the maze information and solve it!
         centerFound = 0  #stop when you find the center
@@ -260,10 +258,10 @@ class SimulateMouse(object):
           # N, E, S, W, NE, NW, NS, EW, ES, SW, NEW, NES, NWS, EWS, NEWS
 
           # dumb algorithm, just go with whatever we first find is open
-          if ahead: bestPath[index] = self.FORWARD
-          elif right: bestPath[index] = self.RIGHT
-          elif left: bestPath[index] = self.LEFT
-          elif behind: bestPath[index] = self.REVERSE
+          if ahead: bestPath.append(self.FORWARD)
+          elif right: bestPath.append(self.RIGHT)
+          elif left: bestPath.append(self.LEFT)
+          elif behind: bestPath.append(self.REVERSE)
           else: print "help me!"
 
           # turn based on the new movement to calculate new heading
