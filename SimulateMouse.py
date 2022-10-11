@@ -55,7 +55,9 @@ class SimulateMouse(object):
           # TODO get sensor data from the robot
 
           index += 1
+
           # stop mapping out the maze walls after you find the center
+
           centerFound = 1
 
         return mazeKnowledge
@@ -145,7 +147,13 @@ class SimulateMouse(object):
 
         #TODO set up for 5x5 grid, too
 
-        #print "***** oldSpot:", oldSpot, "direction:", direction, "*****"
+        d = "unk"
+        if direction == self.N: d="North"
+        elif direction == self.E: d="East"
+        elif direction == self.S: d="South"
+        elif direction == self.W: d="West"
+        else: d="ERROR"
+        print "***** oldSpot:", oldSpot, "direction:", d, "*****"
 
         if oldSpot == 0:
           if direction==self.E: return 1
@@ -202,7 +210,7 @@ class SimulateMouse(object):
           'Right = 1
         """
 
-        print("now generating the best path...")
+        print("now discovering the best path...")
 
         #bestPath = [0,0,0,1,1,-1,0,-1,1]. #example
         bestPath = [7,7,7,7,7,7,7,7] # load with garbage
@@ -215,7 +223,7 @@ class SimulateMouse(object):
         myDirection = self.NORTH  #start by default facing North
 
         while not centerFound:
-          print "maze step #", index, ":", mazeKnowledge[currentSpot]
+          print "\n\nmaze step #", index, ":", mazeKnowledge[currentSpot]
 
           if index > 0:
             #TODO keep track of the new current spot...
@@ -265,6 +273,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Optional app description')
     parser.add_argument('-n', type=int, help='The size of the maze, should be an even number.')
+    parser.add_argument('-x', type=int, help='The example you want to run, e.g. 1 or 2.')
     args = parser.parse_args()
 
     #print('args: %s'%(str(args)))
@@ -279,10 +288,14 @@ if __name__ == "__main__":
     if n > 5: n = 5
     if n < 3: n = 3
 
+    example = 2
+    if args.x:
+        example = abs(args.x)
+
     # first generate the maze
     print("now generating the maze...")
     generateMaze = GenerateMaze()
-    maze = generateMaze.createMaze(n, example=1)
+    maze = generateMaze.createMaze(n, example)
 
     # now run the simulation
     sm = SimulateMouse()
@@ -291,14 +304,18 @@ if __name__ == "__main__":
     bestPath = sm.generateBestPath(maze)
 
     # for my first example 3x3, compare against the known solution:
-    solutionExample1 = [sm.F,sm.F,sm.R,sm.F,sm.R,sm.F,sm.R,sm.R]
-    print "solution:", solutionExample1
+    solutionExample = []
+    if example==1:
+      solutionExample = [sm.F,sm.F,sm.R,sm.F,sm.R,sm.F,sm.R,sm.R]
+    elif example==2:
+      solutionExample = [sm.R,sm.F,sm.L,sm.F,sm.L,sm.L]
+    print "solution:", solutionExample
 
     # check for success
     success = 1
     for i in range(0, len(bestPath)):
-      if bestPath[i] != solutionExample1[i]:
-        print "Error on step", i, "in the maze. Guessed", bestPath[i], "was", solutionExample1[i]
+      if bestPath[i] != solutionExample[i]:
+        print "Error on step", i, "in the maze. Guessed", bestPath[i], "was", solutionExample[i]
         success = 0
         break
     if success: print("Success! We did it!")
