@@ -194,12 +194,35 @@ class SimulateMouse(object):
         print "ERROR in findNewSpot()"
         return 1
 
-    def optimizePath(self, inputMoves):
+    def optimizePath(self, inputMoves, deadends, spotList):
         """
         inputMoves
           Input: List of actions to take in each space; actions are integers (LEFT, RIGHT, FORWARD, REVERSE)
+
+        deadends
+          Input: List of dead-ends that were found
+
+        spotList
+          Input: List of spots we were at
         """
-        return inputMoves
+
+        optimizedPath = []
+
+        print "\t inputMoves", inputMoves
+        print "\t deadends  ", deadends
+        print "\t spotList  ", spotList
+
+        # we only need to optimize if we found a dead-end and had to reverse
+        if len(deadends) == 0 and self.REVERSE not in inputMoves:
+          print "Path optimization not necessary."
+          return inputMoves
+
+        for i in range(0,len(inputMoves)):
+          print "  i:", i, "MOVE:", inputMoves[i], "   SPOT", spotList[i]
+          if inputMoves[i] is not 7 and spotList[i] not in deadends: continue
+
+        optimizedPath = inputMoves
+        return optimizedPath
 
     def generateBestPath(self, mazeKnowledge):
         """
@@ -305,7 +328,7 @@ class SimulateMouse(object):
 
         #TODO now that I have _a_ path to the center, find the _best_ path to the center
 
-        optimizedPath = self.optimizePath(bestPath)
+        optimizedPath = self.optimizePath(bestPath, deadend, previousSpots)
 
         print "bestPath:", bestPath
         print "optimizedPath:", optimizedPath
