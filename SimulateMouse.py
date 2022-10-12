@@ -194,6 +194,13 @@ class SimulateMouse(object):
         print "ERROR in findNewSpot()"
         return 1
 
+    def optimizePath(self, inputMoves):
+        """
+        inputMoves
+          Input: List of actions to take in each space; actions are integers (LEFT, RIGHT, FORWARD, REVERSE)
+        """
+        return inputMoves
+
     def generateBestPath(self, mazeKnowledge):
         """
         Using the knowledge about the maze, solve for the optimum path through it.
@@ -298,8 +305,11 @@ class SimulateMouse(object):
 
         #TODO now that I have _a_ path to the center, find the _best_ path to the center
 
+        optimizedPath = self.optimizePath(bestPath)
+
         print "bestPath:", bestPath
-        return bestPath
+        print "optimizedPath:", optimizedPath
+        return optimizedPath
 
 if __name__ == "__main__":
     print("simulating the maze!")
