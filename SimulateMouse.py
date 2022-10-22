@@ -194,6 +194,16 @@ class SimulateMouse(object):
         print "ERROR in findNewSpot()"
         return 1
 
+    def opposite(self, direction):
+        """
+        direction
+          Input: L, R, F, or V
+        """
+        if direction == self.L: return self.R
+        if direction == self.R: return self.L
+        if direction == self.F: return self.V
+        if direction == self.V: return self.F
+
     def optimizePath(self, inputMoves, deadends, spotList):
         """
         inputMoves
@@ -208,20 +218,41 @@ class SimulateMouse(object):
 
         optimizedPath = []
 
+        print " "
         print "\t inputMoves", inputMoves
         print "\t deadends  ", deadends
         print "\t spotList  ", spotList
 
         # we only need to optimize if we found a dead-end and had to reverse
         if len(deadends) == 0 and self.REVERSE not in inputMoves:
-          print "Path optimization not necessary."
+          print "Path optimization not necessary.\n"
           return inputMoves
+        print "\nStarting path optimization...\n"
+        print "inputMoves:    ", inputMoves
 
-        for i in range(0,len(inputMoves)):
-          print "  i:", i, "MOVE:", inputMoves[i], "   SPOT", spotList[i]
-          if inputMoves[i] is not 7 and spotList[i] not in deadends: continue
+        #for i in range(0,len(inputMoves)):
+        #  print "  i:", i, "MOVE:", inputMoves[i], "   SPOT", spotList[i]
+        #  #if inputMoves[i] is not 7 and spotList[i] not in deadends: continue
 
+        # Find reversals, then remove that move and the previous move, and
+        # Example:
+        #     [4, 7, 5, 4, 5, 4, 5, 4, 7, 6]
+        #     [      6, 4, 5, 4, 5,     , 5]
         optimizedPath = inputMoves
+        while 1:
+          # end the loop if all the reversals are gone
+          if self.V not in optimizedPath: break
+
+          i = optimizedPath.index(self.V)
+          print "i: ", i
+          newMove = self.opposite(optimizedPath[i+1])
+          print "newMove = ", newMove
+          optimizedPath[i+1] = newMove
+          newOptPath = optimizedPath
+          newOptPath.pop(i)
+          newOptPath.pop(i-1)
+          print "newOptPath:    ", newOptPath
+
         return optimizedPath
 
     def generateBestPath(self, mazeKnowledge):
@@ -327,11 +358,10 @@ class SimulateMouse(object):
           index += 1
 
         #TODO now that I have _a_ path to the center, find the _best_ path to the center
-
         optimizedPath = self.optimizePath(bestPath, deadend, previousSpots)
 
-        print "bestPath:", bestPath
-        print "optimizedPath:", optimizedPath
+        print "bestPath:      ", bestPath
+        print "optimizedPath: ", optimizedPath
         return optimizedPath
 
 if __name__ == "__main__":
@@ -375,7 +405,8 @@ if __name__ == "__main__":
       solutionExample = [sm.F,sm.F,sm.R,sm.F,sm.R,sm.F,sm.R,sm.R]
     elif example==2:
       solutionExample = [sm.R,sm.F,sm.L,sm.F,sm.L,sm.L]
-    print "solution:", solutionExample
+    print "solution:      ", solutionExample
+    print "           F=4, L=5, R=6, V=7"
 
     # check for success
     success = 1
