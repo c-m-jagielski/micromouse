@@ -94,7 +94,7 @@ class SimulateMouse(object):
           if newMovement == self.RIGHT: return self.NORTH
           if newMovement == self.REVERSE: return self.EAST
         else:
-          print "Directional Error, bad input direction given:", currentDirection
+          print("Directional Error, bad input direction given:", currentDirection)
         return 0  # just default to North if something went wrong...
 
     def availableMoves(self, myDirection, wallsHere):

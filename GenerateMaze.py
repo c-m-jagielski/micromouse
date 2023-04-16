@@ -99,7 +99,7 @@ class GenerateMaze(object):
           maze[7] = [1,0,1,0]
           maze[8] = [0,1,1,0]
         else:
-          print "ERROR: example maze not supported"
+          print("ERROR: example maze not supported")
 
         """
         # All this is for an old example of a 4x4, not sure I want to keep this though. Odd 'n' values seem better.
