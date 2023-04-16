@@ -178,7 +178,7 @@ class GenerateMaze(object):
             tmp = ""
             for kk in range(0,n):
                 tmp = tmp + str(maze[k*n+kk]) + " "
-                #print "k", k, "kk", kk, "maze[k+kk] = ", maze[k+kk]. #TODO update print statement
+                #print("k", k, "kk", kk, "maze[k+kk] = ", maze[k+kk]) #TODO update print statement
             print(tmp)
             print("")
 

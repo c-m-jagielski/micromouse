@@ -155,7 +155,7 @@ class SimulateMouse(object):
         elif direction == self.S: d="South"
         elif direction == self.W: d="West"
         else: d="ERROR"
-        print "***** oldSpot:", oldSpot, "direction:", d, "*****"
+        print("***** oldSpot:", oldSpot, "direction:", d, "*****")
 
         if oldSpot == 0:
           if direction==self.E: return 1
@@ -191,7 +191,7 @@ class SimulateMouse(object):
           if direction==self.N: return 5
           if direction==self.W: return 7
         else: pass
-        print "ERROR in findNewSpot()"
+        print("ERROR in findNewSpot()")
         return 1
 
     def opposite(self, direction):
@@ -218,20 +218,20 @@ class SimulateMouse(object):
 
         optimizedPath = []
 
-        print " "
-        print "\t inputMoves", inputMoves
-        print "\t deadends  ", deadends
-        print "\t spotList  ", spotList
+        print(" ")
+        print("\t inputMoves", inputMoves)
+        print("\t deadends  ", deadends)
+        print("\t spotList  ", spotList)
 
         # we only need to optimize if we found a dead-end and had to reverse
         if len(deadends) == 0 and self.REVERSE not in inputMoves:
-          print "Path optimization not necessary.\n"
+          print("Path optimization not necessary.\n")
           return inputMoves
-        print "\nStarting path optimization...\n"
-        print "inputMoves:    ", inputMoves
+        print("\nStarting path optimization...\n")
+        print("inputMoves:    ", inputMoves)
 
         #for i in range(0,len(inputMoves)):
-        #  print "  i:", i, "MOVE:", inputMoves[i], "   SPOT", spotList[i]
+        #  print("  i:", i, "MOVE:", inputMoves[i], "   SPOT", spotList[i])
         #  #if inputMoves[i] is not 7 and spotList[i] not in deadends: continue
 
         # Find reversals, then remove that move and the previous move, and
@@ -244,14 +244,14 @@ class SimulateMouse(object):
           if self.V not in optimizedPath: break
 
           i = optimizedPath.index(self.V)
-          print "i: ", i
+          print("i: ", i)
           newMove = self.opposite(optimizedPath[i+1])
-          print "newMove = ", newMove
+          print("newMove = ", newMove)
           optimizedPath[i+1] = newMove
           newOptPath = optimizedPath
           newOptPath.pop(i)
           newOptPath.pop(i-1)
-          print "newOptPath:    ", newOptPath
+          print("newOptPath:    ", newOptPath)
 
         return optimizedPath
 
@@ -289,11 +289,11 @@ class SimulateMouse(object):
         if self.mazeSize == 3: center = 4
         elif self.mazeSize == 5: center = 99
         else:
-          print "ERROR: maze size not supported"
+          print("ERROR: maze size not supported")
           return
 
         while not centerFound:
-          print "\n\nmaze step #", index, ":", mazeKnowledge[currentSpot]
+          print("\n\nmaze step #", index, ":", mazeKnowledge[currentSpot])
 
           # store the spots to which we've been
           previousSpots.append(currentSpot)
@@ -308,11 +308,11 @@ class SimulateMouse(object):
           # are we in the center? Yes if behind us is the only open spot
           if behind and (not ahead and not right and not left):
             if currentSpot == center:
-              print "Found the center!"
+              print("Found the center!")
               centerFound = 1
               break
             else:
-              print "Found a deadend at spot ", currentSpot
+              print("Found a deadend at spot ", currentSpot)
               deadend.append(currentSpot)
 
           # what's possible? 15 total moves
@@ -343,16 +343,16 @@ class SimulateMouse(object):
           elif right: bestPath.append(self.RIGHT)
           elif left: bestPath.append(self.LEFT)
           elif behind: bestPath.append(self.REVERSE)
-          else: print "help me I'm trapped!"
+          else: print("help me I'm trapped!")
 
           # turn based on the new movement to calculate new heading
           tmp = self.turn(myDirection, bestPath[index])
           myDirection = tmp
-          #print "  new direction:", myDirection
+          #print("  new direction:", myDirection)
 
           # OK what is the next space going to be???
           tmp = self.findNewSpot(currentSpot, myDirection)
-          #print "NEW current spot = ", currentSpot, "  ... guess = ", tmp
+          #print("NEW current spot = ", currentSpot, "  ... guess = ", tmp)
           currentSpot = tmp
 
           index += 1
@@ -360,8 +360,8 @@ class SimulateMouse(object):
         #TODO now that I have _a_ path to the center, find the _best_ path to the center
         optimizedPath = self.optimizePath(bestPath, deadend, previousSpots)
 
-        print "bestPath:      ", bestPath
-        print "optimizedPath: ", optimizedPath
+        print("bestPath:      ", bestPath)
+        print("optimizedPath: ", optimizedPath)
         return optimizedPath
 
 if __name__ == "__main__":
@@ -405,14 +405,14 @@ if __name__ == "__main__":
       solutionExample = [sm.F,sm.F,sm.R,sm.F,sm.R,sm.F,sm.R,sm.R]
     elif example==2:
       solutionExample = [sm.R,sm.F,sm.L,sm.F,sm.L,sm.L]
-    print "solution:      ", solutionExample
-    print "           F=4, L=5, R=6, V=7"
+    print("solution:      ", solutionExample)
+    print("           F=4, L=5, R=6, V=7")
 
     # check for success
     success = 1
     for i in range(0, len(bestPath)):
       if bestPath[i] != solutionExample[i]:
-        print "Error on step", i, "in the maze. Guessed", bestPath[i], "was", solutionExample[i]
+        print("Error on step", i, "in the maze. Guessed", bestPath[i], "was", solutionExample[i])
         success = 0
         break
     if success: print("Success! We did it!")
