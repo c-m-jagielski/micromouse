@@ -11,6 +11,9 @@ Code components:
 
 # TODO list
 What's on the docket?
+ * start with Raspberry Pi, set up a blinking light and ultrasonic distance sensor
+ ** e.g. turn on LED when in 'search/discovery' move, or different light when in 'race' mode
+ ** use distance sensor to determine when robot hits wall and needs to make a decision (turn left, right, or 180)
  * add real unit tests into test_class for pytest to use
  * add pre-built mazes of multiple sizes (to enable repeatable testing)
  * make a mechanism to generate a random maze (must follow maze rules)
