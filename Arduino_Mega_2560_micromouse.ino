@@ -42,15 +42,19 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly
 
+  stopMotor();
+
   if (loopCount == 0) {
     Serial.println("First loop. Clearing LCD in 5 seconds.");
-    delay(5000);
+    delay(4900);
     lcd.clear();
     loopCount = 1;
     lcd.setCursor(2, 0);
+    delay(100);
   }
-  lcd.setCursor(2, 0);
-  lcd.print("Running...");
+  lcd_print_loop();
+  //lcd.setCursor(2, 0);
+  //lcd.print("Running...");
 
   float distance = readSensorData();
   Serial.print(distance);   
@@ -59,10 +63,10 @@ void loop() {
   if (distance < 10.0) {
     stopMotor();
     Serial.println("Obstacle detected. Stopping!");
+    lcd.clear();
     lcd.setCursor(2, 0);
     lcd.print("obstacle!");
-    //lcd.print(88);
-    delay(3000);
+    delay(1000);
   } else { clockwise(255); }
 
   /*
@@ -114,10 +118,11 @@ void stopMotor()
 }
 
 void lcd_print_loop() {
+  Serial.println("Inside the LCD Print Loop.");
   lcd.clear();
   lcd.setCursor(3, 0); // Set cursor at position three(3) on first line of 1602 LCD
   for (int i = 0; i <= 9; i++) {
     lcd.print(i); // Display succesive values of variable i
-    delay(1000); // Delay delay1 after each display of i
+    delay(100); // Delay after each display of i
   }
 }
