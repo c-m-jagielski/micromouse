@@ -12,11 +12,13 @@ const int trigPin = 5;
 const int motor1A = 10;
 const int motor2A = 9;
 
+int loopCount = 0;
+
 // set the LCD address to 0x27 for a 16 chars and 2 line display
 LiquidCrystal_I2C lcd(0x27,16,2);
 
 void setup() {
-  // put your setup code here, to run once:
+  // put your setup code here, to run once
 
   // initialize the motor
   pinMode(motor1A, OUTPUT);
@@ -29,20 +31,26 @@ void setup() {
   Serial.begin(9600);
   pinMode(echoPin, INPUT);
   pinMode(trigPin, OUTPUT);
-  Serial.println("Hi there!");
-  Serial.println("Ultrasonic sensor.");
-  
+  Serial.println("\n\nNow setting up Micromouse...\n\n");
+
   lcd.setCursor(2, 0);
   lcd.print("Micromouse!");
   lcd.setCursor(2, 1);
   lcd.print("- by Chris J");
 }
 
-void loop() { }
-void blah() {
-  // put your main code here, to run repeatedly:
+void loop() {
+  // put your main code here, to run repeatedly
 
-  //lcd.clear();
+  if (loopCount == 0) {
+    Serial.println("First loop. Clearing LCD in 5 seconds.");
+    delay(5000);
+    lcd.clear();
+    loopCount = 1;
+    lcd.setCursor(2, 0);
+  }
+  lcd.setCursor(2, 0);
+  lcd.print("Running...");
 
   float distance = readSensorData();
   Serial.print(distance);   
@@ -51,10 +59,10 @@ void blah() {
   if (distance < 10.0) {
     stopMotor();
     Serial.println("Obstacle detected. Stopping!");
-    //lcd.setCursor(2, 0);
-    //lcd.print("obstacle!");
+    lcd.setCursor(2, 0);
+    lcd.print("obstacle!");
     //lcd.print(88);
-    //delay(5000);
+    delay(3000);
   } else { clockwise(255); }
 
   /*
@@ -103,4 +111,13 @@ void stopMotor()
 {
   analogWrite(motor1A, 0);
   analogWrite(motor2A, 0);
+}
+
+void lcd_print_loop() {
+  lcd.clear();
+  lcd.setCursor(3, 0); // Set cursor at position three(3) on first line of 1602 LCD
+  for (int i = 0; i <= 9; i++) {
+    lcd.print(i); // Display succesive values of variable i
+    delay(1000); // Delay delay1 after each display of i
+  }
 }
