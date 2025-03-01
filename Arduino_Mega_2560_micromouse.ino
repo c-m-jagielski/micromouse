@@ -45,14 +45,14 @@ void loop() {
   stopMotor();
 
   if (loopCount == 0) {
-    Serial.println("First loop. Clearing LCD in 5 seconds.");
-    delay(4900);
-    lcd.clear();
+    Serial.println("First loop. Clearing LCD in 3 seconds.");
+    delay(2900);
+    //lcd.clear();
     loopCount = 1;
     lcd.setCursor(2, 0);
     delay(100);
   }
-  lcd_print_loop();
+  //lcd_print_loop();
   //lcd.setCursor(2, 0);
   //lcd.print("Running...");
 
@@ -66,8 +66,14 @@ void loop() {
     lcd.clear();
     lcd.setCursor(2, 0);
     lcd.print("obstacle!");
-    delay(1000);
-  } else { clockwise(255); }
+    delay(800);
+  } else {
+    lcd.clear();
+    lcd.setCursor(2, 0);
+    lcd.print("Running...");
+    //clockwise(255);
+    delay(10);
+  }
 
   /*
   if (Serial.available() > 0) {
@@ -119,10 +125,12 @@ void stopMotor()
 
 void lcd_print_loop() {
   Serial.println("Inside the LCD Print Loop.");
-  lcd.clear();
-  lcd.setCursor(3, 0); // Set cursor at position three(3) on first line of 1602 LCD
+  //lcd.clear();
+  lcd.setCursor(2, 0); // Set cursor at position three(3) on first line of 1602 LCD
+  char dash = '-';
   for (int i = 0; i <= 9; i++) {
-    lcd.print(i); // Display succesive values of variable i
+    //lcd.print(i); // Display succesive values of variable i
+    lcd.print(dash);
     delay(100); // Delay after each display of i
   }
 }
