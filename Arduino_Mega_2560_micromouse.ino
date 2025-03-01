@@ -1,3 +1,6 @@
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h> // LiquidCrystal I2C@1.1.2 from Library Manager
+
 // The 4kb (4096 bytes) EEPROM memory is not erased when powered off.
 
 // RESOURCES:
@@ -9,21 +12,37 @@ const int trigPin = 5;
 const int motor1A = 10;
 const int motor2A = 9;
 
+// set the LCD address to 0x27 for a 16 chars and 2 line display
+LiquidCrystal_I2C lcd(0x27,16,2);
+
 void setup() {
   // put your setup code here, to run once:
+
+  // initialize the motor
   pinMode(motor1A, OUTPUT);
   pinMode(motor2A, OUTPUT);
+
+  // initialize the LCD
+  lcd.init();
+  lcd.backlight();
 
   Serial.begin(9600);
   pinMode(echoPin, INPUT);
   pinMode(trigPin, OUTPUT);
   Serial.println("Hi there!");
   Serial.println("Ultrasonic sensor.");
-  Serial.println("Please input 'A' or 'B' to select the motor rotate direction.");
+  
+  lcd.setCursor(2, 0);
+  lcd.print("Micromouse!");
+  lcd.setCursor(2, 1);
+  lcd.print("- by Chris J");
 }
 
-void loop() {
+void loop() { }
+void blah() {
   // put your main code here, to run repeatedly:
+
+  //lcd.clear();
 
   float distance = readSensorData();
   Serial.print(distance);   
@@ -32,6 +51,9 @@ void loop() {
   if (distance < 10.0) {
     stopMotor();
     Serial.println("Obstacle detected. Stopping!");
+    //lcd.setCursor(2, 0);
+    //lcd.print("obstacle!");
+    //lcd.print(88);
     //delay(5000);
   } else { clockwise(255); }
 
