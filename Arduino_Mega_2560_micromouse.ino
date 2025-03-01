@@ -28,8 +28,14 @@ void loop() {
   float distance = readSensorData();
   Serial.print(distance);   
   Serial.println(" cm.  <-- ultrasonic sensor reading");
-  //delay(400);
-  
+
+  if (distance < 10.0) {
+    stopMotor();
+    Serial.println("Obstacle detected. Stopping!");
+    //delay(5000);
+  } else { clockwise(255); }
+
+  /*
   if (Serial.available() > 0) {
     int incomingByte = Serial.read();
     switch (incomingByte) {
@@ -43,8 +49,10 @@ void loop() {
         break;
     }
   }
-  delay(3000);
-  stopMotor();
+  */
+
+  delay(200);
+  //delay(3000);
 }
 
 float readSensorData(){
