@@ -42,7 +42,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly
 
-  stopMotor();
+  DCmotor_stopMotor();
 
   if (loopCount == 0) {
     Serial.println("First loop. Clearing LCD in 3 seconds.");
@@ -61,7 +61,7 @@ void loop() {
   Serial.println(" cm.  <-- ultrasonic sensor reading");
 
   if (distance < 10.0) {
-    stopMotor();
+    DCmotor_stopMotor();
     Serial.println("Obstacle detected. Stopping!");
     lcd.clear();
     lcd.setCursor(2, 0);
@@ -80,11 +80,11 @@ void loop() {
     int incomingByte = Serial.read();
     switch (incomingByte) {
       case 'A':
-        clockwise(255);
+        DCmotor_clockwise(255);
         Serial.println("The motor rotate clockwise.");
         break;
       case 'B':
-        anticlockwise(255);
+        DCmotor_anticlockwise(255);
         Serial.println("The motor rotate anticlockwise.");
         break;
     }
@@ -105,19 +105,19 @@ float readSensorData(){
   return distance;
 }
 
-void clockwise(int Speed)
+void DCmotor_clockwise(int Speed)
 {
   analogWrite(motor1A, 0);
   analogWrite(motor2A, Speed);
 }
 
-void anticlockwise(int Speed)
+void DCmotor_anticlockwise(int Speed)
 {
   analogWrite(motor1A, Speed);
   analogWrite(motor2A, 0);
 }
 
-void stopMotor()
+void DCmotor_stopMotor()
 {
   analogWrite(motor1A, 0);
   analogWrite(motor2A, 0);
