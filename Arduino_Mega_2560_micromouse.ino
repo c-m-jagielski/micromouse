@@ -32,8 +32,13 @@ const int motor2A = 9;
 
 int loopCount = 0;
 
-// set the LCD address to 0x27 for a 16 chars and 2 line display
+// Set the LCD address to 0x27 for a 16 chars and 2 line display
 LiquidCrystal_I2C lcd(0x27,16,2);
+
+// Maze search variables
+byte heading = 0;         // 0=North, 1=East, 2=South, 3=West
+int cell = 0;             // [0:15] for a 4x4 maze
+int pathHistory[] = {0};  // Array for path history in Search, might help with decision making
 
 // Cell structure for Micromouse maze memory
 // Total size: 3 bytes per cell
@@ -145,6 +150,26 @@ float readSensorData(){
   digitalWrite(trigPin, LOW);  
   float distance = pulseIn(echoPin, HIGH)/58.00;  //Equivalent to (340m/s*1us)/2
   return distance;
+}
+
+// Update heading when turning right (90° clockwise)
+void turnRight() {
+  heading = (heading + 1) % 4;
+  // 0->1, 1->2, 2->3, 3->0
+}
+
+// Update heading when turning left (90° counterclockwise)
+void turnLeft() {
+  heading = (heading + 3) % 4;
+  // 0->3, 1->0, 2->1, 3->2
+  // Using (heading + 3) % 4 is equivalent to (heading - 1) % 4
+  // but avoids negative numbers
+}
+
+// Update heading when turning around (180°)
+void turnAround() {
+  heading = (heading + 2) % 4;
+  // 0->2, 1->3, 2->0, 3->1
 }
 
 void DCmotor_clockwise(int Speed)
