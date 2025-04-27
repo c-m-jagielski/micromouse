@@ -140,6 +140,12 @@ void loop() {
 
   delay(200);
   //delay(3000);
+
+  // Check if we're in the center to end search mode
+  if (isAtCenter()) {
+    // Beep or something to alert us :)
+    while(1) {delay(1000);}
+  }
 }
 
 float readSensorData(){
@@ -219,4 +225,9 @@ byte getWall(byte wallInfo, byte direction) {
   // returns: 0=open, 1=wall, 2=unknown
   byte shift = direction * 2;
   return (wallInfo >> shift) & 0b11;
+}
+
+// Check if current cell is one of the target center cells
+bool isAtCenter() {
+  return (cell == 5 || cell == 6 || cell == 9 || cell == 10);
 }
