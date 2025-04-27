@@ -9,6 +9,22 @@
 // https://docs.sunfounder.com/projects/vincent-kit/en/latest/arduino/2.13_motor.html#ar-motor 
 //
 
+/*
+ *   For a 4x4 maze, assume we enter cell zero (0) in the bottom-left from the South (initial heading is North).
+ *   The center will always be cells 5, 6, 9, & 10.
+ *
+ *    .____ ____ ____ ____.
+ *    | 12 | 13 | 14 | 15 |
+ *    |  8 |  9 | 10 | 11 |
+ *    |  4 |  5 |  6 |  7 |
+ *    |  0 |  1 |  2 |  3 |
+ *    .     ____ ____ ____.
+ *       ^
+ *.      |
+ *     Enter
+ *
+ */
+
 const int echoPin = 4;
 const int trigPin = 5;
 const int motor1A = 10;
