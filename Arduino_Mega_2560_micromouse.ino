@@ -1,12 +1,13 @@
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h> // LiquidCrystal I2C@1.1.2 from Library Manager
-#include <EEPROM.h> // for persistent memory; Arduino Mega has 4 kB EEPROM storage
+#include <EEPROM.h> // for persistent memory
 
-// The 4kb (4096 bytes) EEPROM memory is not erased when powered off.
+// The Arduino Mega's 4kb (4096 bytes) EEPROM memory is not erased when powered off.
 
 // RESOURCES:
 // https://docs.sunfounder.com/projects/vincent-kit/en/latest/arduino/2.33_ultrasonic_module.html#ar-ultrasonic
 // https://docs.sunfounder.com/projects/vincent-kit/en/latest/arduino/2.13_motor.html#ar-motor 
+//
 
 const int echoPin = 4;
 const int trigPin = 5;
@@ -158,4 +159,23 @@ void lcd_print_loop() {
     lcd.print(dash);
     delay(100); // Delay after each display of i
   }
+}
+
+// Example function to set wall information for a given cell
+void setWall(byte &wallInfo, byte direction, byte value) {
+  // direction: 0=North, 1=East, 2=South, 3=West
+  // value: 0=open, 1=wall, 2=unknown
+  byte shift = direction * 2;
+  // Clear the bits at the position
+  wallInfo &= ~(0b11 << shift);
+  // Set the new value
+  wallInfo |= (value & 0b11) << shift;
+}
+
+// Example function to get wall information for a given cell
+byte getWall(byte wallInfo, byte direction) {
+  // direction: 0=North, 1=East, 2=South, 3=West
+  // returns: 0=open, 1=wall, 2=unknown
+  byte shift = direction * 2;
+  return (wallInfo >> shift) & 0b11;
 }
