@@ -143,7 +143,10 @@ void loop() {
 
   // Check if we're in the center to end search mode
   if (isAtCenter()) {
-    // Beep or something to alert us :)
+    Serial.println("Found the center!");
+
+    // TODO Beep or something to alert us :)
+
     while(1) {delay(1000);}
   }
 }
@@ -230,4 +233,52 @@ byte getWall(byte wallInfo, byte direction) {
 // Check if current cell is one of the target center cells
 bool isAtCenter() {
   return (cell == 5 || cell == 6 || cell == 9 || cell == 10);
+}
+
+// Update cell position when moving forward based on current heading
+// Returns true if move is valid, false if it would go outside maze
+bool updateCellPosition() {
+  int newCell = cell;
+
+  switch (heading) {
+    case 0: // North
+      newCell = cell + 4;
+      break;
+    case 1: // East
+      newCell = cell + 1;
+      break;
+    case 2: // South
+      newCell = cell - 4;
+      break;
+    case 3: // West
+      newCell = cell - 1;
+      break;
+  }
+
+  // Check if new position is valid (within 4x4 maze)
+  if (newCell < 0 || newCell > 15) {
+    return false; // Outside maze boundaries
+  }
+
+  // Check for invalid edge transitions (wrapping around edges)
+  if ((cell % 4 == 3 && newCell % 4 == 0) || // Right edge to left edge
+      (cell % 4 == 0 && newCell % 4 == 3)) { // Left edge to right edge
+    return false;
+  }
+
+  // Valid move, update cell position
+  cell = newCell;
+
+  // Update path history (assuming pathHistory is implemented elsewhere)
+  // This is simplified - you would need proper path history management
+  updatePathHistory(cell);
+
+  return true;
+}
+
+// Helper function to update path history
+void updatePathHistory(int newCell) {
+  // This is a placeholder - you would need to implement proper path history management
+  // For example, adding the new cell to the history array
+  // pathHistory[pathHistoryIndex++] = newCell;
 }
