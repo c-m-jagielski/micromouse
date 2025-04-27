@@ -1,5 +1,6 @@
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h> // LiquidCrystal I2C@1.1.2 from Library Manager
+#include <EEPROM.h> // for persistent memory; Arduino Mega has 4 kB EEPROM storage
 
 // The 4kb (4096 bytes) EEPROM memory is not erased when powered off.
 
@@ -16,6 +17,30 @@ int loopCount = 0;
 
 // set the LCD address to 0x27 for a 16 chars and 2 line display
 LiquidCrystal_I2C lcd(0x27,16,2);
+
+// Cell structure for Micromouse maze memory
+// Total size: 3 bytes per cell
+struct MazeCell {
+  // Wall information - 1 byte
+  // Bit representation for walls (2 bits per wall direction):
+  // 00 = known to be open
+  // 01 = known to have wall
+  // 10 = unknown (not yet observed)
+  // Bits 0-1: North wall
+  // Bits 2-3: East wall
+  // Bits 4-5: South wall
+  // Bits 6-7: West wall
+  byte wallInfo;
+
+  // Visited flag - 1 bit (packed into a byte for simplicity)
+  // 0 = unvisited, 1 = visited
+  byte visited;
+
+  // Distance value - 1 byte
+  // 0-254: Distance from center
+  // 255: Uninitialized
+  byte distance;
+};
 
 void setup() {
   // put your setup code here, to run once
