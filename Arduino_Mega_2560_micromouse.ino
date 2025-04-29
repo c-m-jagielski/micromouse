@@ -102,6 +102,7 @@ void loop() {
   // - Check ultrasound distance, is there a wall in front of us?
   // - Update knowledge about the current cell in EEPROM
   // - If no wall in front of us, FIN
+  // - Turn left, FIN
 
   DCmotor_stopMotor();
 
@@ -120,23 +121,10 @@ void loop() {
   moveForward();
 
   float distance = readSensorData();
-  Serial.print(distance);   
-  Serial.println(" cm.  <-- ultrasonic sensor reading");
+  bool wallDetected;
+  wallDetected = isThereAWallInFrontOfMe(distance);
 
-  if (distance < 10.0) {
-    DCmotor_stopMotor();
-    Serial.println("Obstacle detected. Stopping!");
-    lcd.clear();
-    lcd.setCursor(2, 0);
-    lcd.print("obstacle!");
-    delay(800);
-  } else {
-    lcd.clear();
-    lcd.setCursor(2, 0);
-    lcd.print("Running...");
-    //clockwise(255);
-    delay(10);
-  }
+  //clockwise(255);
 
   /*
   if (Serial.available() > 0) {
@@ -233,8 +221,24 @@ void lcd_print_loop() {
 
 // Check ultrasound distance, is there a wall in front of us?
 // Also, update knowledge about the current cell in EEPROM
-bool isThereAWallInFrontOfMe() {
-  return true;
+bool isThereAWallInFrontOfMe(int distance) {
+  Serial.print(distance);
+  Serial.println(" cm.  <-- ultrasonic sensor reading");
+
+  if (distance < 10.0) {
+    DCmotor_stopMotor();
+    Serial.println("Obstacle detected. Stopping!");
+    lcd.clear();
+    lcd.setCursor(2, 0);
+    lcd.print("obstacle!");
+    delay(800);
+    return true;
+  }
+  lcd.clear();
+  lcd.setCursor(2, 0);
+  lcd.print("Running...");
+  delay(10);
+  return false;
 }
 
 // Example function to set wall information for a given cell
