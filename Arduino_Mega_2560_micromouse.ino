@@ -37,7 +37,7 @@ LiquidCrystal_I2C lcd(0x27,16,2);
 
 // Maze search variables
 byte heading = 0;         // 0=North, 1=East, 2=South, 3=West
-int cell = 0;             // [0:15] for a 4x4 maze
+int cell = -1;            // [0:15] for a 4x4 maze, initialize with -1 when starting outside of the maze
 int pathHistory[] = {0};  // Array for path history in Search, might help with decision making
 
 // Cell structure for Micromouse maze memory
@@ -89,6 +89,20 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly
 
+  // Micromouse Search:
+  // - Move forward to the next cell (and update current cell)
+  // - Check ultrasound distance, is there a wall in front of us?
+  // - Update knowledge about the current cell in EEPROM
+  // - If no wall in front of us, FIN
+  // - Turn right (and update heading)
+  // - Check ultrasound distance, is there a wall in front of us?
+  // - Update knowledge about the current cell in EEPROM
+  // - If no wall in front of us, FIN
+  // - Turn around (180°)
+  // - Check ultrasound distance, is there a wall in front of us?
+  // - Update knowledge about the current cell in EEPROM
+  // - If no wall in front of us, FIN
+
   DCmotor_stopMotor();
 
   if (loopCount == 0) {
@@ -102,6 +116,8 @@ void loop() {
   //lcd_print_loop();
   //lcd.setCursor(2, 0);
   //lcd.print("Running...");
+
+  moveForward();
 
   float distance = readSensorData();
   Serial.print(distance);   
@@ -161,6 +177,10 @@ float readSensorData(){
   return distance;
 }
 
+bool moveForward() {
+  return true;
+}
+
 // Update heading when turning right (90° clockwise)
 void turnRight() {
   heading = (heading + 1) % 4;
@@ -209,6 +229,12 @@ void lcd_print_loop() {
     lcd.print(dash);
     delay(100); // Delay after each display of i
   }
+}
+
+// Check ultrasound distance, is there a wall in front of us?
+// Also, update knowledge about the current cell in EEPROM
+bool isThereAWallInFrontOfMe() {
+  return true;
 }
 
 // Example function to set wall information for a given cell
