@@ -39,6 +39,7 @@ LiquidCrystal_I2C lcd(0x27,16,2);
 byte heading = 0;         // 0=North, 1=East, 2=South, 3=West
 int cell = -1;            // [0:15] for a 4x4 maze, initialize with -1 when starting outside of the maze
 int pathHistory[] = {0};  // Array for path history in Search, might help with decision making
+int MAZE_SIZE = 4;        // Future work to enable dynamic maze sizes
 
 // Cell structure for Micromouse maze memory
 // Total size: 3 bytes per cell
