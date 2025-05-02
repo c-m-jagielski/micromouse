@@ -125,8 +125,6 @@ void loop() {
   bool wallDetected;
   wallDetected = isThereAWallInFrontOfMe(distance);
 
-  //clockwise(255);
-
   /*
   if (Serial.available() > 0) {
     int incomingByte = Serial.read();
@@ -152,7 +150,16 @@ void loop() {
 
     // TODO Beep or something to alert us :)
 
+    // Chill until the robot is picked up and reset
     while(1) {delay(1000);}
+  }
+
+  if(wallDetected) {
+    // Turn right and check again
+    turnRight();
+    float rightDistance = readSensorData();
+    bool rightWallDetected;
+    rightWallDetected = isThereAWallInFrontOfMe(rightDistance);
   }
 }
 
@@ -233,12 +240,14 @@ bool isThereAWallInFrontOfMe(int distance) {
     lcd.setCursor(2, 0);
     lcd.print("obstacle!");
     delay(800);
+    recordWallInfo(true);
     return true;
   }
   lcd.clear();
   lcd.setCursor(2, 0);
   lcd.print("Running...");
   delay(10);
+  recordWallInfo(false);
   return false;
 }
 
@@ -305,6 +314,10 @@ bool updateCellPosition() {
   updatePathHistory(cell);
 
   return true;
+}
+
+void recordWallInfo(bool wallStatus) {
+  return;
 }
 
 // Helper function to update path history
