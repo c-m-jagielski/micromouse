@@ -104,6 +104,17 @@ void loop() {
   // - Update knowledge about the current cell in EEPROM
   // - If no wall in front of us, FIN
   // - Turn left, FIN
+  //
+  // INSTEAD, try... the Left-Hand Rule (Wall Follower) or Flood Fill
+  //
+  // When entering a new cell:
+  //   Update wall information in all directions you can sense
+  //   If any unexplored cells are accessible, prioritize those
+  //   Otherwise, move to the cell that's closest to the target (by Manhattan distance or flood fill distance)
+  //
+  // First priority: Move to adjacent unexplored cells
+  // Second priority: Move to the cell with the shortest distance to target
+  // Third priority: Backtrack if necessary
 
   DCmotor_stopMotor();
 
