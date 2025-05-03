@@ -316,8 +316,83 @@ bool updateCellPosition() {
   return true;
 }
 
-void recordWallInfo(bool wallStatus) {
-  return;
+void recordWallInfo(bool wallDetected) {
+  // Skip if we're not in a valid cell
+  if (cell < 0 || cell > 15) return;
+
+  // Read current cell data from EEPROM
+  int eepromAddr = cell * sizeof(MazeCell);
+  MazeCell currentCell;
+  EEPROM.get(eepromAddr, currentCell);
+
+  // Determine which wall we're facing based on our heading
+  byte wallDirection = heading; // 0=North, 1=East, 2=South, 3=West
+
+  // Set the wall information (0=open, 1=wall, 2=unknown)
+  byte wallValue = wallDetected ? 1 : 0;
+  setWall(currentCell.wallInfo, wallDirection, wallValue);
+
+  // Mark cell as visited
+  currentCell.visited = 1;
+
+  // Write updated data back to EEPROM
+  EEPROM.put(eepromAddr, currentCell);
+
+  // Debug output
+  /*
+  Serial.print("Updated cell ");
+  Serial.print(cell);
+  Serial.print(" wall info: ");
+  Serial.println(currentCell.wallInfo, BIN);
+  */
+
+  // Update the corresponding wall in the adjacent cell (if it exists)
+  int adjacentCell = -1;
+  byte oppositeWall = (wallDirection + 2) % 4; // Calculate opposite wall direction
+
+  // Calculate adjacent cell based on current heading
+  switch (heading) {
+    case 0: // North
+      adjacentCell = cell + 4;
+      break;
+    case 1: // East
+      adjacentCell = cell + 1;
+      break;
+    case 2: // South
+      adjacentCell = cell - 4;
+      break;
+    case 3: // West
+      adjacentCell = cell - 1;
+      break;
+  }
+
+  // Check if adjacent cell is valid (within maze boundaries)
+  if (adjacentCell >= 0 && adjacentCell < 16) {
+    // Check for invalid edge transitions (e.g. wrapping around from right edge to left edge)
+    bool invalidEdge = false;
+    if ((cell % 4 == 3 && adjacentCell % 4 == 0) || // Right edge to left edge
+        (cell % 4 == 0 && adjacentCell % 4 == 3)) { // Left edge to right edge
+      invalidEdge = true;
+    }
+
+    if (!invalidEdge) {
+      // Read adjacent cell data
+      int adjacentAddr = adjacentCell * sizeof(MazeCell);
+      MazeCell adjacentCellData;
+      EEPROM.get(adjacentAddr, adjacentCellData);
+
+      // Update the opposite wall in the adjacent cell
+      setWall(adjacentCellData.wallInfo, oppositeWall, wallValue);
+
+      // Write updated data back to EEPROM
+      EEPROM.put(adjacentAddr, adjacentCellData);
+
+      Serial.print("Updated adjacent cell ");
+      Serial.print(adjacentCell);
+      Serial.print(" wall info: ");
+      Serial.println(adjacentCellData.wallInfo, BIN);
+    }
+  }
 }
 
 // Helper function to update path history
@@ -325,4 +400,88 @@ void updatePathHistory(int newCell) {
   // This is a placeholder - you would need to implement proper path history management
   // For example, adding the new cell to the history array
   // pathHistory[pathHistoryIndex++] = newCell;
+}
+
+// Clear the entire EEPROM memory
+void EEPROM_clear() {
+  for (int i = 0 ; i < EEPROM.length() ; i++) {
+    EEPROM.write(i, 0);
+  }
+}
+
+// Initialize the maze with known outer walls and unknown interior walls
+void initializeMaze() {
+  Serial.println("Initializing maze in EEPROM...");
+
+  // Loop through all cells in the 4x4 maze
+  for (int cellIdx = 0; cellIdx < 16; cellIdx++) {
+    MazeCell cell;
+
+    // Set all walls initially to unknown (value 2)
+    cell.wallInfo = 0;
+    for (int dir = 0; dir < 4; dir++) {
+      setWall(cell.wallInfo, dir, 2); // 2 = unknown
+    }
+
+    // Check if this cell is on any edge and set outer walls accordingly
+
+    // North edge (top row: cells 12-15)
+    if (cellIdx >= 12 && cellIdx <= 15) {
+      setWall(cell.wallInfo, 0, 1); // North wall exists
+    }
+
+    // East edge (rightmost column: cells 3, 7, 11, 15)
+    if (cellIdx % 4 == 3) {
+      setWall(cell.wallInfo, 1, 1); // East wall exists
+    }
+
+    // South edge (bottom row: cells 0-3)
+    if (cellIdx >= 0 && cellIdx <= 3) {
+      setWall(cell.wallInfo, 2, 1); // South wall exists
+    }
+
+    // West edge (leftmost column: cells 0, 4, 8, 12)
+    if (cellIdx % 4 == 0) {
+      setWall(cell.wallInfo, 3, 1); // West wall exists
+    }
+
+    // Mark all cells as unvisited
+    cell.visited = 0;
+
+    // Set distance values - 255 for uninitialized
+    cell.distance = 255;
+
+    // Set center cells with initial distance of 0
+    if (cellIdx == 5 || cellIdx == 6 || cellIdx == 9 || cellIdx == 10) {
+      cell.distance = 0; // Center cells
+    }
+
+    // Write the initialized cell to EEPROM
+    int eepromAddr = cellIdx * sizeof(MazeCell);
+    EEPROM.put(eepromAddr, cell);
+  }
+
+  // Special case for the entry point (we'll enter from south of cell 0)
+  // Open the south wall of cell 0 (this would be our entry point)
+  int entryCell = 0;
+  int entryAddr = entryCell * sizeof(MazeCell);
+  MazeCell entryData;
+  EEPROM.get(entryAddr, entryData);
+  setWall(entryData.wallInfo, 2, 0); // 0 = open (south wall of cell 0)
+  EEPROM.put(entryAddr, entryData);
+
+  Serial.println("Maze initialization complete!");
+
+  // Debug: print initialized maze wall information
+  Serial.println("Initialized maze wall information:");
+  for (int i = 0; i < 16; i++) {
+    MazeCell debugCell;
+    EEPROM.get(i * sizeof(MazeCell), debugCell);
+    Serial.print("Cell ");
+    Serial.print(i);
+    Serial.print(": Wall info = ");
+    Serial.print(debugCell.wallInfo, BIN);
+    Serial.print(", Distance = ");
+    Serial.println(debugCell.distance);
+  }
 }
