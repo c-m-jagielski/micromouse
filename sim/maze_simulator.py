@@ -1,0 +1,401 @@
+"""
+Micromouse Simulation System
+
+This project creates a Python simulation environment for testing Micromouse C++ code.
+It includes:
+1. A maze simulation
+2. C++ bindings using pybind11
+3. Visualization tools
+
+Project Structure:
+- maze_simulator.py - Main simulation environment
+- micromouse_wrapper.cpp - C++ wrapper with pybind11 bindings
+- setup.py - Build script for C++ extensions
+- requirements.txt - Python dependencies
+- README.md - Setup and usage instructions
+"""
+
+# maze_simulator.py
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+from matplotlib import animation
+import time
+import argparse
+import os
+import sys
+from typing import List, Tuple, Dict, Optional
+
+# Import the C++ module (will be built using pybind11)
+try:
+    import micromouse_cpp
+    print("c++ micromouse import successful")
+except ImportError:
+    print("C++ module not found. Please build it first with 'python setup.py build_ext --inplace'")
+    print("Running in simulation-only mode")
+    micromouse_cpp = None
+
+class MazeSimulator:
+    """A 4x4 maze simulator for Micromouse testing."""
+    
+    def __init__(self, maze_layout=None):
+        """Initialize the maze simulator.
+        
+        Args:
+            maze_layout: Optional predefined maze layout. If None, a default maze is used.
+        """
+        self.size = 4  # 4x4 maze
+        self.cell_size = 100  # pixels
+        
+        # Initialize maze with all walls
+        # walls[y][x] = [N, E, S, W] where 1 indicates a wall, 0 indicates no wall
+        if maze_layout is None:
+            # Default maze layout
+            self.walls = self._create_default_maze()
+        else:
+            self.walls = maze_layout
+            
+        # Micromouse state
+        self.mouse_position = (-1, 0)  # Start outside the maze, south of cell (0,0)
+        self.mouse_heading = 0  # 0=North, 1=East, 2=South, 3=West
+        
+        # For visualization
+        self.fig = None
+        self.ax = None
+        self.mouse_patch = None
+        self.visited_cells = set()
+        
+        # Record of wall detections to pass to the C++ code
+        self.detected_walls = {}
+    
+    def _create_default_maze(self) -> List[List[List[int]]]:
+        """Create a default maze layout."""
+        # Initialize with all walls
+        walls = [[[1, 1, 1, 1] for _ in range(self.size)] for _ in range(self.size)]
+        
+        # Remove some walls to create a solvable maze
+        # Format: walls[y][x] = [N, E, S, W]
+        
+        # Opening at the start (south of bottom-left cell)
+        walls[0][0][2] = 0  # Remove south wall of (0,0)
+        
+        # Create a path to the center
+        walls[0][0][1] = 0  # Remove east wall of (0,0)
+        walls[0][1][1] = 0  # Remove east wall of (0,1)
+        walls[0][2][0] = 0  # Remove north wall of (0,2)
+        walls[1][2][0] = 0  # Remove north wall of (1,2)
+        walls[2][2][3] = 0  # Remove west wall of (2,2)
+        walls[2][1][2] = 0  # Remove south wall of (2,1)
+        walls[1][1][1] = 0  # Remove east wall of (1,1)
+        
+        # Make sure the center is accessible
+        walls[1][1][0] = 0  # Remove north wall between (1,1) and (2,1)
+        walls[1][2][1] = 0  # Remove east wall between (1,2) and (1,3)
+        
+        # Ensure consistency (if north wall of cell A is removed, south wall of cell above A must also be removed)
+        for y in range(self.size):
+            for x in range(self.size):
+                # North wall consistency
+                if y < self.size-1 and walls[y][x][0] == 0:
+                    walls[y+1][x][2] = 0
+                
+                # East wall consistency
+                if x < self.size-1 and walls[y][x][1] == 0:
+                    walls[y][x+1][3] = 0
+                
+                # South wall consistency
+                if y > 0 and walls[y][x][2] == 0:
+                    walls[y-1][x][0] = 0
+                
+                # West wall consistency
+                if x > 0 and walls[y][x][3] == 0:
+                    walls[y][x-1][1] = 0
+        
+        return walls
+    
+    def is_center(self, cell_idx: int) -> bool:
+        """Check if a cell is in the center of the maze."""
+        # Convert linear index to x,y coordinates
+        x = cell_idx % self.size
+        y = cell_idx // self.size
+        
+        # Center of a 4x4 maze is cells (1,1), (1,2), (2,1), (2,2)
+        return (x in [1, 2] and y in [1, 2])
+    
+    def get_cell_linear_index(self, x: int, y: int) -> int:
+        """Convert (x,y) coordinates to linear cell index."""
+        return y * self.size + x
+    
+    def get_cell_coordinates(self, cell_idx: int) -> Tuple[int, int]:
+        """Convert linear cell index to (x,y) coordinates."""
+        x = cell_idx % self.size
+        y = cell_idx // self.size
+        return (x, y)
+    
+    def detect_wall(self, cell_x: int, cell_y: int, direction: int) -> bool:
+        """Check if there is a wall in the specified direction from the given cell."""
+        # Make sure the cell is within bounds
+        if not (0 <= cell_x < self.size and 0 <= cell_y < self.size):
+            return True  # Treat out-of-bounds as walls
+        
+        # Return wall status in the specified direction
+        return self.walls[cell_y][cell_x][direction] == 1
+    
+    def move_mouse(self, direction: int) -> bool:
+        """Move the micromouse in the specified direction if possible.
+        
+        Args:
+            direction: 0=North, 1=East, 2=South, 3=West
+            
+        Returns:
+            True if the move was successful, False if blocked by a wall
+        """
+        current_x, current_y = self.mouse_position
+        
+        # If starting outside the maze, special handling for entry
+        if current_x == -1 and current_y == 0 and direction == 0:  # Entering from south
+            self.mouse_position = (0, 0)
+            self.mouse_heading = 0
+            self.visited_cells.add((0, 0))
+            return True
+        
+        # Check if there is a wall in the direction of movement
+        if self.detect_wall(current_x, current_y, direction):
+            return False
+        
+        # Calculate new position
+        if direction == 0:  # North
+            new_x, new_y = current_x, current_y + 1
+        elif direction == 1:  # East
+            new_x, new_y = current_x + 1, current_y
+        elif direction == 2:  # South
+            new_x, new_y = current_x, current_y - 1
+        else:  # West
+            new_x, new_y = current_x - 1, current_y
+        
+        # Check if new position is valid
+        if not (0 <= new_x < self.size and 0 <= new_y < self.size):
+            return False
+        
+        # Update position
+        self.mouse_position = (new_x, new_y)
+        self.visited_cells.add((new_x, new_y))
+        return True
+    
+    def move_forward(self) -> bool:
+        """Move the micromouse forward in the current heading direction."""
+        result = self.move_mouse(self.mouse_heading)
+        
+        # Record the detection for the C++ code
+        if self.mouse_position != (-1, 0):  # If not outside the maze
+            x, y = self.mouse_position
+            cell_idx = self.get_cell_linear_index(x, y)
+            wall_detected = not result
+            
+            if cell_idx not in self.detected_walls:
+                self.detected_walls[cell_idx] = {}
+            
+            self.detected_walls[cell_idx][self.mouse_heading] = wall_detected
+        
+        return result
+    
+    def turn_right(self):
+        """Turn the micromouse 90° clockwise."""
+        self.mouse_heading = (self.mouse_heading + 1) % 4
+    
+    def turn_left(self):
+        """Turn the micromouse 90° counterclockwise."""
+        self.mouse_heading = (self.mouse_heading + 3) % 4
+    
+    def turn_around(self):
+        """Turn the micromouse 180°."""
+        self.mouse_heading = (self.mouse_heading + 2) % 4
+    
+    def read_sensor(self) -> float:
+        """Simulate reading from an ultrasonic sensor."""
+        # Get current position and heading
+        x, y = self.mouse_position
+        
+        # If outside the maze, return a large value (no wall)
+        if x == -1 and y == 0:
+            return 999.0 if self.mouse_heading == 0 else 10.0
+        
+        # Check if there's a wall in the current heading direction
+        if self.detect_wall(x, y, self.mouse_heading):
+            return 5.0  # Wall detected at 5cm distance
+        else:
+            return 30.0  # No wall within sensor range
+    
+    def initialize_visualization(self):
+        """Set up the visualization of the maze and micromouse."""
+        plt.ion()  # Enable interactive mode
+        self.fig, self.ax = plt.subplots(figsize=(8, 8))
+        self.ax.set_xlim(-0.5, self.size - 0.5)
+        self.ax.set_ylim(-0.5, self.size - 0.5)
+        self.ax.set_aspect('equal')
+        self.ax.grid(True)
+        self.ax.set_title('Micromouse Simulation')
+        self.ax.set_xticks(range(self.size))
+        self.ax.set_yticks(range(self.size))
+        
+        # Draw the maze
+        self._draw_maze()
+        
+        # Initialize mouse representation
+        self.mouse_patch = Rectangle((-0.3, -0.3), 0.6, 0.6, color='red', alpha=0.7)
+        self.ax.add_patch(self.mouse_patch)
+        self._update_mouse_visualization()
+        
+        plt.tight_layout()
+        plt.show()
+    
+    def _draw_maze(self):
+        """Draw the maze walls."""
+        for y in range(self.size):
+            for x in range(self.size):
+                # Check each wall direction
+                if self.walls[y][x][0] == 1:  # North wall
+                    self.ax.plot([x-0.5, x+0.5], [y+0.5, y+0.5], 'k-', linewidth=2)
+                if self.walls[y][x][1] == 1:  # East wall
+                    self.ax.plot([x+0.5, x+0.5], [y-0.5, y+0.5], 'k-', linewidth=2)
+                if self.walls[y][x][2] == 1:  # South wall
+                    self.ax.plot([x-0.5, x+0.5], [y-0.5, y-0.5], 'k-', linewidth=2)
+                if self.walls[y][x][3] == 1:  # West wall
+                    self.ax.plot([x-0.5, x-0.5], [y-0.5, y+0.5], 'k-', linewidth=2)
+        
+        # Mark the center of the maze
+        center_x = (self.size - 1) / 2.0
+        center_y = (self.size - 1) / 2.0
+        self.ax.add_patch(plt.Rectangle((center_x-0.5, center_y-0.5), 1, 1, 
+                                        color='green', alpha=0.2))
+    
+    def _update_mouse_visualization(self):
+        """Update the micromouse's position and orientation in the visualization."""
+        x, y = self.mouse_position
+        
+        # If outside the maze, position it below the starting position
+        if x == -1 and y == 0:
+            x, y = 0, -0.5
+        
+        # Update position
+        self.mouse_patch.set_xy((x-0.3, y-0.3))
+        
+        # Update orientation (draw a line showing the heading)
+        dx, dy = 0, 0
+        if self.mouse_heading == 0:  # North
+            dx, dy = 0, 0.2
+        elif self.mouse_heading == 1:  # East
+            dx, dy = 0.2, 0
+        elif self.mouse_heading == 2:  # South
+            dx, dy = 0, -0.2
+        else:  # West
+            dx, dy = -0.2, 0
+        
+        # Remove previous heading indicator
+        for line in self.ax.lines:
+            if hasattr(line, 'mouse_heading_indicator'):
+                line.remove()
+        
+        # Draw new heading indicator
+        line = self.ax.plot([x, x+dx], [y, y+dy], 'k-', linewidth=2)[0]
+        line.mouse_heading_indicator = True
+        
+        # Color the visited cells
+        for vx, vy in self.visited_cells:
+            self.ax.add_patch(plt.Rectangle((vx-0.5, vy-0.5), 1, 1, 
+                                           color='blue', alpha=0.1))
+        
+        # Update the display
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
+    
+    def run_simulation_step(self):
+        """Run one step of the simulation."""
+        # Get sensor reading
+        distance = self.read_sensor()
+        
+        # Update visualization
+        if self.fig is not None:
+            self._update_mouse_visualization()
+            plt.pause(0.1)
+        
+        # Return the distance reading
+        return distance
+    
+    def run_simulation(self, steps=100, with_cpp=False):
+        """Run the full simulation for a specified number of steps."""
+        self.initialize_visualization()
+        
+        for step in range(steps):
+            print(f"\nStep {step+1}/{steps}")
+            print(f"Mouse position: {self.mouse_position}, heading: {self.mouse_heading}")
+            
+            # Run the C++ code if available
+            if with_cpp and micromouse_cpp is not None:
+                # Set up the state for the C++ code
+                micromouse_cpp.set_position(self.get_cell_linear_index(*self.mouse_position))
+                micromouse_cpp.set_heading(self.mouse_heading)
+                
+                # Run one step of the C++ algorithm
+                micromouse_cpp.run_step(self.read_sensor())
+                
+                # Get the updated state from C++
+                new_cell = micromouse_cpp.get_position()
+                new_heading = micromouse_cpp.get_heading()
+                
+                # Convert linear index to coordinates
+                new_x, new_y = self.get_cell_coordinates(new_cell)
+                
+                # Update mouse position and heading
+                self.mouse_position = (new_x, new_y)
+                self.mouse_heading = new_heading
+            else:
+                # Run built-in simulation logic
+                self._run_builtin_algorithm()
+            
+            # Check if we've reached the center
+            x, y = self.mouse_position
+            if 1 <= x <= 2 and 1 <= y <= 2:
+                print("Reached the center of the maze!")
+                break
+            
+            # Update visualization
+            self._update_mouse_visualization()
+            plt.pause(0.3)  # Slow down the simulation for visibility
+        
+        plt.ioff()
+        plt.show()
+    
+    def _run_builtin_algorithm(self):
+        """A simple wall-following algorithm for demonstration."""
+        # Check if there's a wall in front
+        distance = self.read_sensor()
+        
+        if distance < 10:  # Wall detected
+            print("Wall detected in front, turning right")
+            self.turn_right()
+        else:  # No wall
+            if self.move_forward():
+                print("Moving forward")
+            else:
+                print("Failed to move forward, turning right")
+                self.turn_right()
+    
+    def export_to_cpp(self) -> Dict:
+        """Export the current maze state to a format usable by the C++ code."""
+        result = {
+            'size': self.size,
+            'walls': self.walls,
+            'detected_walls': self.detected_walls
+        }
+        return result
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Micromouse Maze Simulator')
+    parser.add_argument('--steps', type=int, default=100, help='Number of simulation steps')
+    parser.add_argument('--cpp', action='store_true', help='Use C++ algorithm')
+    args = parser.parse_args()
+    
+    # Create and run the simulation
+    simulator = MazeSimulator()
+    simulator.run_simulation(steps=args.steps, with_cpp=args.cpp)
