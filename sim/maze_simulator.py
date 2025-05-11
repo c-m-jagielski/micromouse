@@ -416,8 +416,6 @@ class MazeSimulator:
         blocked = False
         wallToTheLeft = False
         wallToTheRight = False
-        #print(cell_idx)
-        #print((self.mouse_heading + 3) % 4)
         if cell_idx in self.detected_walls:
             try:
                 leftHeading = (self.mouse_heading + 3) % 4
@@ -430,13 +428,18 @@ class MazeSimulator:
                 pass
         #wallToTheLeft = self.detected_walls.get(cell_idx, {}).get((self.mouse_heading + 3) % 4, False)
         #wallToTheRight = self.detected_walls.get(cell_idx, {}).get((self.mouse_heading + 1) % 4, False)
-        print("LEFT: ", wallToTheLeft, "  RIGHT: ", wallToTheRight)
         if wallInFront and wallToTheLeft and wallToTheRight:
             blocked = True
+
+        # Check if forward is my only option
+        mustGoForward = False
 
         if blocked:
             print("Blocked, turning around")
             self.turn_around()
+        elif mustGoForward:
+            print("No choice but to move forward")
+            self.move_forward()
         elif wallInFront:  # Wall detected
             print("Wall detected in front, turning right")
             self.turn_right()
