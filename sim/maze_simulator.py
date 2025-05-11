@@ -378,6 +378,25 @@ class MazeSimulator:
             self.visited_cells = set()
         """
 
+        spaceInFrontOfMe = -1
+        x, y = self.mouse_position
+        cell_idx = self.get_cell_linear_index(x, y)
+
+        # Calculate new maze cell in front of me
+        if self.mouse_heading == 0:  # North
+            spaceInFrontOfMe = cell_idx + 4
+        elif self.mouse_heading == 1:  # East
+            spaceInFrontOfMe = cell_idx + 1
+        elif self.mouse_heading == 2:  # South
+            spaceInFrontOfMe = cell_idx - 4
+        else:  # West
+            spaceInFrontOfMe = cell_idx - 1
+
+        # Have I been to the space in front of me before?
+        beenThere = False
+        if (self.get_cell_coordinates(spaceInFrontOfMe)) in self.visited_cells:
+            beenThere = True
+
         # Check if there's a wall in front
         distance = self.read_sensor()
 
@@ -387,25 +406,6 @@ class MazeSimulator:
         else:  # No wall
             # Try to to the space in front of me, unless I've already been there, otherwise turn right.
             # And of course don't try to go there if the space isn't even valid.
-            spaceInFrontOfMe = -1
-
-            x, y = self.mouse_position
-            cell_idx = self.get_cell_linear_index(x, y)
-
-            # Calculate new position in front of me
-            if self.mouse_heading == 0:  # North
-                spaceInFrontOfMe = cell_idx + 4
-            elif self.mouse_heading == 1:  # East
-                spaceInFrontOfMe = cell_idx + 1
-            elif self.mouse_heading == 2:  # South
-                spaceInFrontOfMe = cell_idx - 4
-            else:  # West
-                spaceInFrontOfMe = cell_idx - 1
-
-            # Have I been to the space in front of me before?
-            beenThere = False
-            if (self.get_cell_coordinates(spaceInFrontOfMe)) in self.visited_cells:
-                beenThere = True
 
             # Check if space in front is even valid (within 4x4 maze), so we don't leave the maze on accident
             if spaceInFrontOfMe < 0 or spaceInFrontOfMe > 15:
