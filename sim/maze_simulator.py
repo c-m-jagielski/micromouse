@@ -398,9 +398,18 @@ class MazeSimulator:
             beenThere = True
 
         # Check if there's a wall in front
-        distance = self.read_sensor()
+        wallInFront = False
+        if self.read_sensor() < 10:
+            wallInFront = True
 
-        if distance < 10:  # Wall detected
+        # Check if I'm blocked in and need to reverse (full 180)
+        blocked = False
+        wallToTheLeft = False
+        wallToTheRight = False
+        if wallInFront and wallToTheLeft and wallToTheRight:
+            blocked = True
+
+        if wallInFront:  # Wall detected
             print("Wall detected in front, turning right")
             self.turn_right()
         else:  # No wall
