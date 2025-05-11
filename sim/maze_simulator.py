@@ -357,7 +357,9 @@ class MazeSimulator:
             x, y = self.mouse_position
             if 1 <= x <= 2 and 1 <= y <= 2:
                 print("Reached the center of the maze!")
-                break
+                plt.pause(2.0)
+                print("\n\nHit CTRL+C to exit.\n")
+                while 1: plt.pause(5.0)
 
             # Update visualization
             self._update_mouse_visualization()
