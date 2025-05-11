@@ -84,7 +84,9 @@ class MazeSimulator:
         walls[0][2][1] = 0  # Remove east wall of (0,2)
         walls[0][3][0] = 0  # Remove north wall of (0,3)
         walls[1][2][0] = 0  # Remove north wall of (1,2)
+        walls[1][3][0] = 0  # Remove north wall of (1,3)
         walls[2][2][3] = 0  # Remove west wall of (2,2)
+        walls[2][3][0] = 0  # Remove north wall of (2,3)
         walls[2][1][2] = 0  # Remove south wall of (2,1)
         walls[1][1][1] = 0  # Remove east wall of (1,1)
 
