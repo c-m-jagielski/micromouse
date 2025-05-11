@@ -140,8 +140,18 @@ class MazeSimulator:
         if not (0 <= cell_x < self.size and 0 <= cell_y < self.size):
             return True  # Treat out-of-bounds as walls
 
+        # Get wall status
+        wall_exists = self.walls[cell_y][cell_x][direction] == 1
+
+        # Record the detection for the C++ code
+        if 0 <= cell_x < self.size and 0 <= cell_y < self.size:
+            cell_idx = self.get_cell_linear_index(cell_x, cell_y)
+            if cell_idx not in self.detected_walls:
+                self.detected_walls[cell_idx] = {}
+            self.detected_walls[cell_idx][direction] = wall_exists
+
         # Return wall status in the specified direction
-        return self.walls[cell_y][cell_x][direction] == 1
+        return wall_exists
 
     def move_mouse(self, direction: int) -> bool:
         """Move the micromouse in the specified direction if possible.
@@ -406,10 +416,28 @@ class MazeSimulator:
         blocked = False
         wallToTheLeft = False
         wallToTheRight = False
+        #print(cell_idx)
+        #print((self.mouse_heading + 3) % 4)
+        if cell_idx in self.detected_walls:
+            try:
+                leftHeading = (self.mouse_heading + 3) % 4
+                print("   LEFT Heading: ", leftHeading)
+                rightHeading = (self.mouse_heading + 1) % 4
+                print("   RIGHT Heading: ", rightHeading)
+                wallToTheLeft = self.detected_walls[cell_idx][leftHeading]
+                wallToTheRight = self.detected_walls[cell_idx][rightHeading]
+            except:
+                pass
+        #wallToTheLeft = self.detected_walls.get(cell_idx, {}).get((self.mouse_heading + 3) % 4, False)
+        #wallToTheRight = self.detected_walls.get(cell_idx, {}).get((self.mouse_heading + 1) % 4, False)
+        print("LEFT: ", wallToTheLeft, "  RIGHT: ", wallToTheRight)
         if wallInFront and wallToTheLeft and wallToTheRight:
             blocked = True
 
-        if wallInFront:  # Wall detected
+        if blocked:
+            print("Blocked, turning around")
+            self.turn_around()
+        elif wallInFront:  # Wall detected
             print("Wall detected in front, turning right")
             self.turn_right()
         else:  # No wall
