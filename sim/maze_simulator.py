@@ -416,14 +416,17 @@ class MazeSimulator:
         blocked = False
         wallToTheLeft = False
         wallToTheRight = False
+        wallBehindMe = False
         if cell_idx in self.detected_walls:
             try:
                 leftHeading = (self.mouse_heading + 3) % 4
-                print("   LEFT Heading: ", leftHeading)
+                #print("   LEFT Heading: ", leftHeading)
                 rightHeading = (self.mouse_heading + 1) % 4
-                print("   RIGHT Heading: ", rightHeading)
+                #print("   RIGHT Heading: ", rightHeading)
+                behindMeHeading = (self.mouse_heading + 2) % 4
                 wallToTheLeft = self.detected_walls[cell_idx][leftHeading]
                 wallToTheRight = self.detected_walls[cell_idx][rightHeading]
+                wallBehindMe = self.detected_walls[cell_idx][behindMeHeading]
             except:
                 pass
         #wallToTheLeft = self.detected_walls.get(cell_idx, {}).get((self.mouse_heading + 3) % 4, False)
@@ -433,6 +436,8 @@ class MazeSimulator:
 
         # Check if forward is my only option
         mustGoForward = False
+        if wallBehindMe and wallToTheLeft and wallToTheRight:
+            mustGoForward = True
 
         if blocked:
             print("Blocked, turning around")
