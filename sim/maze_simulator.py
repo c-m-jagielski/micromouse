@@ -25,6 +25,8 @@ import os
 import sys
 from typing import List, Tuple, Dict, Optional
 
+from maze_generator import MazeGenerator
+
 # Import the C++ module (will be built using pybind11)
 try:
     import micromouse_cpp
@@ -48,9 +50,11 @@ class MazeSimulator:
 
         # Initialize maze with all walls
         # walls[y][x] = [N, E, S, W] where 1 indicates a wall, 0 indicates no wall
+        self.maze_generator = MazeGenerator()
         if maze_layout is None:
             # Default maze layout
-            self.walls = self._create_default_maze()
+            #self.walls = self._create_default_maze()
+            self.walls = self.maze_generator.generate_maze(self.size, "default")
         else:
             self.walls = maze_layout
 
