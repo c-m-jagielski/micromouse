@@ -67,6 +67,9 @@ class MazeSimulator:
         # Record of wall detections to pass to the C++ code
         self.detected_walls = {}
 
+        # Record of dead-end cells
+        self.deadendCells = []
+
     def _create_default_maze(self) -> List[List[List[int]]]:
         """Create a default maze layout."""
         # Initialize with all walls
@@ -389,18 +392,23 @@ class MazeSimulator:
         """
 
         spaceInFrontOfMe = -1
+        spaceBehindMe = -1
         x, y = self.mouse_position
         cell_idx = self.get_cell_linear_index(x, y)
 
         # Calculate new maze cell in front of me
         if self.mouse_heading == 0:  # North
             spaceInFrontOfMe = cell_idx + 4
+            spaceBehindMe = cell_idx - 4
         elif self.mouse_heading == 1:  # East
             spaceInFrontOfMe = cell_idx + 1
+            spaceBehindMe = cell_idx - 1
         elif self.mouse_heading == 2:  # South
             spaceInFrontOfMe = cell_idx - 4
+            spaceBehindMe = cell_idx + 4
         else:  # West
             spaceInFrontOfMe = cell_idx - 1
+            spaceBehindMe = cell_idx + 1
 
         # Have I been to the space in front of me before?
         beenThere = False
@@ -434,12 +442,15 @@ class MazeSimulator:
         if wallInFront and wallToTheLeft and wallToTheRight:
             blocked = True
 
-        # Check if forward is my only option
+        # Check if forward is my only option; this happens when we're _in_ a dead end spot
         mustGoForward = False
         if wallBehindMe and wallToTheLeft and wallToTheRight:
             mustGoForward = True
+            self.deadendCells.append(cell_idx)
 
-        if blocked:
+        if wallToTheLeft and wallToTheRight and (spaceBehindMe in self.deadendCells):
+            self.move_forward()
+        elif blocked:
             print("Blocked, turning around")
             self.turn_around()
         elif mustGoForward:
