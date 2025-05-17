@@ -72,6 +72,20 @@ class MazeSimulator:
 
         # Record of wall detections to pass to the C++ code
         self.detected_walls = {}
+        for i in range(self.size * self.size):
+            for ii in range(4):
+                self.detected_walls[i] = {}
+                self.detected_walls[i][ii] = -1
+
+        # Initialize outside walls
+        self.detected_walls[0][2] = 1
+        self.detected_walls[0][3] = 1
+        self.detected_walls[self.size - 1][1] = 1
+        self.detected_walls[self.size - 1][2] = 1
+        self.detected_walls[self.size * (self.size - 1)][0] = 1
+        self.detected_walls[self.size * (self.size - 1)][3] = 1
+        self.detected_walls[self.size * self.size - 1][0] = 1
+        self.detected_walls[self.size * self.size - 1][1] = 1
 
         # Record of dead-end cells
         self.deadendCells = []
