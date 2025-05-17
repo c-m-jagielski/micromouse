@@ -139,11 +139,15 @@ class MazeGenerator:
 
         # Create a winding path with dead ends
         walls[0][0][1] = 0  # Remove east wall of (0,0)
-        walls[0][1][0] = 0  # Remove north wall of (0,1)
+        walls[0][1][1] = 0  # Remove east wall of (0,1)
+        walls[0][2][1] = 0  # Remove east wall of (0,2)
+        walls[0][3][0] = 0  # Remove north wall of (0,3)
         walls[1][1][3] = 0  # Remove west wall of (1,1)
         walls[1][0][0] = 0  # Remove north wall of (1,0)
         walls[2][0][1] = 0  # Remove east wall of (2,0)
         walls[2][1][1] = 0  # Remove east wall of (2,1)
+        walls[2][3][0] = 0  # Remove north wall of (2,3)
+        walls[3][3][3] = 0  # Remove west wall of (3,3)
 
         # Create a loop around the center
         walls[1][2][0] = 0  # Remove north wall of (1,2)

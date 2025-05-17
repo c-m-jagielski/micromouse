@@ -53,7 +53,7 @@ class MazeSimulator:
         self.maze_generator = MazeGenerator()
         if maze_layout is None:
             # Default maze layout
-            self.walls = self.maze_generator.generate_maze(self.size, "default")
+            self.walls = self.maze_generator.generate_maze(self.size, "complex")
         else:
             self.walls = maze_layout
 
