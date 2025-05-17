@@ -9,6 +9,7 @@ It includes:
 
 Project Structure:
 - maze_simulator.py - Main simulation environment
+- maze_generator.py - Class to build 4x4 and 16x16 maze layouts
 - micromouse_wrapper.cpp - C++ wrapper with pybind11 bindings
 - setup.py - Build script for C++ extensions
 - #requirements.txt - Python dependencies
@@ -45,7 +46,7 @@ class MazeSimulator:
         Args:
             maze_layout: Optional predefined maze layout. If None, a default maze is used.
         """
-        self.size = 16  # 4x4 or 16x16
+        self.size = 4  # 4x4 or 16x16
         self.cell_size = 100  # pixels
 
         # Initialize maze with all walls
@@ -55,7 +56,7 @@ class MazeSimulator:
             # Default maze layout
             #    4: ["default", "simple", "complex"],
             #   16: ["classic", "random", "competition"]
-            self.walls = self.maze_generator.generate_maze(self.size, "classic")
+            self.walls = self.maze_generator.generate_maze(self.size, "default")
         else:
             self.walls = maze_layout
 
@@ -395,17 +396,22 @@ class MazeSimulator:
         wallToTheRight = False
         wallBehindMe = False
         if cell_idx in self.detected_walls:
+            leftHeading = (self.mouse_heading + 3) % 4
+            rightHeading = (self.mouse_heading + 1) % 4
+            behindMeHeading = (self.mouse_heading + 2) % 4
             try:
-                leftHeading = (self.mouse_heading + 3) % 4
-                rightHeading = (self.mouse_heading + 1) % 4
-                behindMeHeading = (self.mouse_heading + 2) % 4
                 wallToTheLeft = self.detected_walls[cell_idx][leftHeading]
+            except:
+                pass
+            try:
                 wallToTheRight = self.detected_walls[cell_idx][rightHeading]
+            except:
+                pass
+            try:
                 wallBehindMe = self.detected_walls[cell_idx][behindMeHeading]
             except:
                 pass
-        #wallToTheLeft = self.detected_walls.get(cell_idx, {}).get((self.mouse_heading + 3) % 4, False)
-        #wallToTheRight = self.detected_walls.get(cell_idx, {}).get((self.mouse_heading + 1) % 4, False)
+
         if wallInFront and wallToTheLeft and wallToTheRight:
             blocked = True
 
@@ -459,7 +465,7 @@ class MazeSimulator:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Micromouse Maze Simulator')
-    parser.add_argument('--steps', type=int, default=100, help='Number of simulation steps')
+    parser.add_argument('--steps', type=int, default=250, help='Number of simulation steps')
     parser.add_argument('--cpp', action='store_true', help='Use C++ algorithm')
     args = parser.parse_args()
 
