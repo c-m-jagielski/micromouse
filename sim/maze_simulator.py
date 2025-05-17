@@ -37,7 +37,7 @@ except ImportError:
     micromouse_cpp = None
 
 class MazeSimulator:
-    """A 4x4 maze simulator for Micromouse testing."""
+    """A maze simulator for Micromouse testing."""
 
     def __init__(self, maze_layout=None):
         """Initialize the maze simulator.
@@ -45,7 +45,7 @@ class MazeSimulator:
         Args:
             maze_layout: Optional predefined maze layout. If None, a default maze is used.
         """
-        self.size = 4  # 4x4 maze
+        self.size = 16  # 4x4 or 16x16
         self.cell_size = 100  # pixels
 
         # Initialize maze with all walls
@@ -53,7 +53,9 @@ class MazeSimulator:
         self.maze_generator = MazeGenerator()
         if maze_layout is None:
             # Default maze layout
-            self.walls = self.maze_generator.generate_maze(self.size, "complex")
+            #    4: ["default", "simple", "complex"],
+            #   16: ["classic", "random", "competition"]
+            self.walls = self.maze_generator.generate_maze(self.size, "classic")
         else:
             self.walls = maze_layout
 
@@ -79,8 +81,12 @@ class MazeSimulator:
         x = cell_idx % self.size
         y = cell_idx // self.size
 
-        # Center of a 4x4 maze is cells (1,1), (1,2), (2,1), (2,2)
-        return (x in [1, 2] and y in [1, 2])
+        # Center of a  4x4  maze is cells (1,1), (1,2), (2,1), (2,2)
+        # Center of a 16x16 maze is cells (7,7), (7,8), (8,7), (8,8)
+        if self.size == 4:
+            return (x in [1, 2] and y in [1, 2])
+        else:
+            return (x in [7, 8] and y in [7, 8])
 
     def get_cell_linear_index(self, x: int, y: int) -> int:
         """Convert (x,y) coordinates to linear cell index."""
@@ -296,6 +302,13 @@ class MazeSimulator:
         """Run the full simulation for a specified number of steps."""
         self.initialize_visualization()
 
+        # Points for the center of the maze
+        low = 1
+        high = 2
+        if self.size == 16:
+            low = 7
+            high = 8
+
         for step in range(steps):
             print(f"\nStep {step+1}/{steps}")
             print(f"Mouse position: {self.mouse_position}, heading: {self.mouse_heading}")
@@ -325,7 +338,7 @@ class MazeSimulator:
 
             # Check if we've reached the center
             x, y = self.mouse_position
-            if 1 <= x <= 2 and 1 <= y <= 2:
+            if low <= x <= high and low <= y <= high:
                 print("Reached the center of the maze!")
                 plt.pause(2.0)
                 print("\n\nHit CTRL+C to exit.\n")
@@ -350,17 +363,18 @@ class MazeSimulator:
         spaceBehindMe = -1
         x, y = self.mouse_position
         cell_idx = self.get_cell_linear_index(x, y)
+        maxCell = self.size * self.size - 1
 
         # Calculate new maze cell in front of me
         if self.mouse_heading == 0:  # North
-            spaceInFrontOfMe = cell_idx + 4
-            spaceBehindMe = cell_idx - 4
+            spaceInFrontOfMe = cell_idx + self.size
+            spaceBehindMe = cell_idx - self.size
         elif self.mouse_heading == 1:  # East
             spaceInFrontOfMe = cell_idx + 1
             spaceBehindMe = cell_idx - 1
         elif self.mouse_heading == 2:  # South
-            spaceInFrontOfMe = cell_idx - 4
-            spaceBehindMe = cell_idx + 4
+            spaceInFrontOfMe = cell_idx - self.size
+            spaceBehindMe = cell_idx + self.size
         else:  # West
             spaceInFrontOfMe = cell_idx - 1
             spaceBehindMe = cell_idx + 1
@@ -383,9 +397,7 @@ class MazeSimulator:
         if cell_idx in self.detected_walls:
             try:
                 leftHeading = (self.mouse_heading + 3) % 4
-                #print("   LEFT Heading: ", leftHeading)
                 rightHeading = (self.mouse_heading + 1) % 4
-                #print("   RIGHT Heading: ", rightHeading)
                 behindMeHeading = (self.mouse_heading + 2) % 4
                 wallToTheLeft = self.detected_walls[cell_idx][leftHeading]
                 wallToTheRight = self.detected_walls[cell_idx][rightHeading]
@@ -419,7 +431,7 @@ class MazeSimulator:
             # And of course don't try to go there if the space isn't even valid.
 
             # Check if space in front is even valid (within 4x4 maze), so we don't leave the maze on accident
-            if spaceInFrontOfMe < 0 or spaceInFrontOfMe > 15:
+            if spaceInFrontOfMe < 0 or spaceInFrontOfMe > maxCell:
                 # Outside maze boundaries
                 print("Space in front of me is not valid, turning right")
                 self.turn_right()

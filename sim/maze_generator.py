@@ -135,7 +135,7 @@ class MazeGenerator:
         walls = [[[1, 1, 1, 1] for _ in range(size)] for _ in range(size)]
 
         # Remove south wall at the start
-        walls[0][0][2] = 0  
+        walls[0][0][2] = 0
 
         # Create a winding path with dead ends
         walls[0][0][1] = 0  # Remove east wall of (0,0)
