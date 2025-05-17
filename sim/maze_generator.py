@@ -68,7 +68,7 @@ class MazeGenerator:
             raise ValueError(f"Unknown 16x16 layout type: {layout_type}")
 
     def _create_4x4_default_maze(self) -> List[List[List[int]]]:
-        """Create the default 4x4 maze layout (ported from original code)."""
+        """Create the default 4x4 maze layout."""
         size = 4
         # Initialize with all walls
         walls = [[[1, 1, 1, 1] for _ in range(size)] for _ in range(size)]

@@ -53,7 +53,6 @@ class MazeSimulator:
         self.maze_generator = MazeGenerator()
         if maze_layout is None:
             # Default maze layout
-            #self.walls = self._create_default_maze()
             self.walls = self.maze_generator.generate_maze(self.size, "default")
         else:
             self.walls = maze_layout
@@ -73,54 +72,6 @@ class MazeSimulator:
 
         # Record of dead-end cells
         self.deadendCells = []
-
-    def _create_default_maze(self) -> List[List[List[int]]]:
-        """Create a default maze layout."""
-        # Initialize with all walls
-        walls = [[[1, 1, 1, 1] for _ in range(self.size)] for _ in range(self.size)]
-
-        # Remove some walls to create a solvable maze
-        # Format: walls[y][x] = [N, E, S, W]
-
-        # Opening at the start (south of bottom-left cell)
-        walls[0][0][2] = 0  # Remove south wall of (0,0)
-
-        # Create a path to the center
-        walls[0][0][1] = 0  # Remove east wall of (0,0)
-        walls[0][1][1] = 0  # Remove east wall of (0,1)
-        walls[0][2][1] = 0  # Remove east wall of (0,2)
-        walls[0][3][0] = 0  # Remove north wall of (0,3)
-        walls[1][2][0] = 0  # Remove north wall of (1,2)
-        walls[1][3][0] = 0  # Remove north wall of (1,3)
-        walls[2][2][3] = 0  # Remove west wall of (2,2)
-        walls[2][3][0] = 0  # Remove north wall of (2,3)
-        walls[2][1][2] = 0  # Remove south wall of (2,1)
-        walls[1][1][1] = 0  # Remove east wall of (1,1)
-
-        # Make sure the center is accessible
-        walls[1][1][0] = 0  # Remove north wall between (1,1) and (2,1)
-        walls[1][2][1] = 0  # Remove east wall between (1,2) and (1,3)
-
-        # Ensure consistency (if north wall of cell A is removed, south wall of cell above A must also be removed)
-        for y in range(self.size):
-            for x in range(self.size):
-                # North wall consistency
-                if y < self.size-1 and walls[y][x][0] == 0:
-                    walls[y+1][x][2] = 0
-
-                # East wall consistency
-                if x < self.size-1 and walls[y][x][1] == 0:
-                    walls[y][x+1][3] = 0
-
-                # South wall consistency
-                if y > 0 and walls[y][x][2] == 0:
-                    walls[y-1][x][0] = 0
-
-                # West wall consistency
-                if x > 0 and walls[y][x][3] == 0:
-                    walls[y][x-1][1] = 0
-
-        return walls
 
     def is_center(self, cell_idx: int) -> bool:
         """Check if a cell is in the center of the maze."""
