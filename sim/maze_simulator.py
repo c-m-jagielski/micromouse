@@ -474,7 +474,7 @@ class MazeSimulator:
         if wallToTheRight in [0, -1]: possibleMoves.append(1)
         if wallBehindMe in [0, -1]: possibleMoves.append(2)
         if wallToTheLeft in [0, -1]: possibleMoves.append(3)
-        print(possibleMoves)
+        print("> Moves:  ", possibleMoves)
 
         # Check if we're currently in a dead end spot, which we'll want to avoid later
         if wallBehindMe == 1 and wallToTheLeft == 1 and wallToTheRight == 1:
@@ -489,7 +489,15 @@ class MazeSimulator:
             return
 
         # Of the possible moves, pick one
+        if 0 in possibleMoves:
+            self.move_forward()
+            return
 
+        if possibleMoves[0] == 0: self.move_forward()
+        elif possibleMoves[0] == 1: self.turn_right()
+        elif possibleMoves[0] == 2: self.turn_around()
+        else: self.turn_left()
+        return
         """
         if wallInFront and wallToTheLeft and wallToTheRight:
             blocked = True
