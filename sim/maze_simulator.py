@@ -72,13 +72,13 @@ class MazeSimulator:
 
         # Record of wall detections to pass to the C++ code
         self.detected_walls = {}
-        for i in range(self.size * self.size):
+        numCells = self.size * self.size
+        for i in range(numCells):
+            self.detected_walls[i] = {}
             for ii in range(4):
-                self.detected_walls[i] = {}
                 self.detected_walls[i][ii] = -1
 
         # Initialize outside walls
-        numCells = self.size * self.size
         self.detected_walls[0][2] = 1  # bottom-left corner
         self.detected_walls[0][3] = 1  # bottom-left corner
         self.detected_walls[self.size - 1][1] = 1  # bottom-right corner
@@ -390,6 +390,11 @@ class MazeSimulator:
         cell_idx = self.get_cell_linear_index(x, y)
         maxCell = self.size * self.size - 1
 
+        # Starting out, we must go forward to enter the maze
+        if cell_idx == -1:
+            self.move_forward()
+            return
+
         # Calculate new maze cell in front of me
         if self.mouse_heading == 0:  # North
             spaceInFrontOfMe = cell_idx + self.size
@@ -412,30 +417,48 @@ class MazeSimulator:
         # Check if there's a wall in front
         wallInFront = False
         if self.read_sensor() < 10:
-            wallInFront = True
+            wallInFront = 1
 
         # Check if I'm blocked in and need to reverse (full 180)
         blocked = False
-        wallToTheLeft = False
-        wallToTheRight = False
-        wallBehindMe = False
+        wallToTheLeft = -1
+        wallToTheRight = -1
+        wallBehindMe = -1
         if cell_idx in self.detected_walls:
             leftHeading = (self.mouse_heading + 3) % 4
             rightHeading = (self.mouse_heading + 1) % 4
             behindMeHeading = (self.mouse_heading + 2) % 4
-            try:
-                wallToTheLeft = self.detected_walls[cell_idx][leftHeading]
-            except:
-                pass
-            try:
-                wallToTheRight = self.detected_walls[cell_idx][rightHeading]
-            except:
-                pass
-            try:
-                wallBehindMe = self.detected_walls[cell_idx][behindMeHeading]
-            except:
-                pass
 
+            wallToTheRight = self.detected_walls[cell_idx][rightHeading]
+            wallBehindMe = self.detected_walls[cell_idx][behindMeHeading]
+            wallToTheLeft = self.detected_walls[cell_idx][leftHeading]
+            print("NORTH HEADING:", wallInFront)
+            print("EAST HEADING: ", wallToTheRight)
+            print("SOUTH HEADING: ", wallBehindMe)
+            print("WEST HEADING: ", wallToTheLeft)
+
+        possibleMoves = []
+        if wallInFront in [0, -1]: possibleMoves.append(0)
+        if wallToTheRight in [0, -1]: possibleMoves.append(1)
+        if wallBehindMe in [0, -1]: possibleMoves.append(2)
+        if wallToTheLeft in [0, -1]: possibleMoves.append(3)
+        print(possibleMoves)
+
+        # Check if we're currently in a dead end spot, which we'll want to avoid later
+        if wallBehindMe == 1 and wallToTheLeft == 1 and wallToTheRight == 1:
+            self.deadendCells.append(cell_idx)
+
+        # If only 1 possible move, do it
+        if len(possibleMoves) == 1:
+            if possibleMoves[0] == 0: self.move_forward()
+            elif possibleMoves[0] == 1: self.turn_right()
+            elif possibleMoves[0] == 2: self.turn_around()
+            else: self.turn_left()
+            return
+
+        # Of the possible moves, pick one
+
+        """
         if wallInFront and wallToTheLeft and wallToTheRight:
             blocked = True
 
@@ -477,6 +500,7 @@ class MazeSimulator:
                     else:
                         print("Failed to move forward, turning right")
                         self.turn_right()
+        """
 
     def export_to_cpp(self) -> Dict:
         """Export the current maze state to a format usable by the C++ code."""
