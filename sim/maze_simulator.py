@@ -78,14 +78,24 @@ class MazeSimulator:
                 self.detected_walls[i][ii] = -1
 
         # Initialize outside walls
-        self.detected_walls[0][2] = 1
-        self.detected_walls[0][3] = 1
-        self.detected_walls[self.size - 1][1] = 1
-        self.detected_walls[self.size - 1][2] = 1
-        self.detected_walls[self.size * (self.size - 1)][0] = 1
-        self.detected_walls[self.size * (self.size - 1)][3] = 1
-        self.detected_walls[self.size * self.size - 1][0] = 1
-        self.detected_walls[self.size * self.size - 1][1] = 1
+        numCells = self.size * self.size
+        self.detected_walls[0][2] = 1  # bottom-left corner
+        self.detected_walls[0][3] = 1  # bottom-left corner
+        self.detected_walls[self.size - 1][1] = 1  # bottom-right corner
+        self.detected_walls[self.size - 1][2] = 1  # bottom-right corner
+        self.detected_walls[numCells - self.size][0] = 1  # top-left corner
+        self.detected_walls[numCells - self.size][3] = 1  # top-left corner
+        self.detected_walls[numCells - 1][0] = 1  # top-right corner
+        self.detected_walls[numCells - 1][1] = 1  # top-right corner
+        for i in range(self.size - 2):
+            # Bottom row, South walls
+            self.detected_walls[i+1][2] = 1
+            # Top row, North walls
+            self.detected_walls[numCells - 1 - i][0] = 1
+            # Left column, West walls
+            self.detected_walls[self.size * (i+1)][3] = 1
+            # Right column, East walls
+            self.detected_walls[self.size * (i+2) - 1][1] = 1
 
         # Record of dead-end cells
         self.deadendCells = []
