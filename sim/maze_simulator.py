@@ -498,49 +498,6 @@ class MazeSimulator:
         elif possibleMoves[0] == 2: self.turn_around()
         else: self.turn_left()
         return
-        """
-        if wallInFront and wallToTheLeft and wallToTheRight:
-            blocked = True
-
-        # Check if forward is my only option; this happens when we're _in_ a dead end spot
-        mustGoForward = False
-        if wallBehindMe and wallToTheLeft and wallToTheRight:
-            mustGoForward = True
-            self.deadendCells.append(cell_idx)
-
-        if wallToTheLeft and wallToTheRight and (spaceBehindMe in self.deadendCells):
-            self.move_forward()
-        elif blocked:
-            print("Blocked, turning around")
-            self.turn_around()
-        elif mustGoForward:
-            print("No choice but to move forward")
-            self.move_forward()
-        elif wallInFront:  # Wall detected
-            print("Wall detected in front, turning right")
-            self.turn_right()
-        else:  # No wall
-            # Try to to the space in front of me, unless I've already been there, otherwise turn right.
-            # And of course don't try to go there if the space isn't even valid.
-
-            # Check if space in front is even valid (within 4x4 maze), so we don't leave the maze on accident
-            if spaceInFrontOfMe < 0 or spaceInFrontOfMe > maxCell:
-                # Outside maze boundaries
-                print("Space in front of me is not valid, turning right")
-                self.turn_right()
-            else:
-                # Space in front of me is valid, but don't go there if I've been there before
-                if beenThere:
-                    print ("Space in front of me is available but I've been there, so turning right")
-                    self.turn_right()
-                else:
-                    # Let's go forward to explore a new space!
-                    if self.move_forward():
-                        print("Moving forward")
-                    else:
-                        print("Failed to move forward, turning right")
-                        self.turn_right()
-        """
 
     def export_to_cpp(self) -> Dict:
         """Export the current maze state to a format usable by the C++ code."""
