@@ -409,15 +409,7 @@ class MazeSimulator:
         plt.show()
 
     def _run_builtin_algorithm(self):
-        """
-        A simple wall-following algorithm for demonstration.
-
-        Structure of detected data, use this to make a decision:
-            self.visited_cells = set()
-        """
-
-        spaceInFrontOfMe = -1
-        spaceBehindMe = -1
+        """A simple wall-following algorithm that prioritizes unexplored spaces."""
         x, y = self.mouse_position
         cell_idx = self.get_cell_linear_index(x, y)
         maxCell = self.size * self.size - 1
@@ -427,77 +419,125 @@ class MazeSimulator:
             self.move_forward()
             return
 
-        # Calculate new maze cell in front of me
-        if self.mouse_heading == 0:  # North
-            spaceInFrontOfMe = cell_idx + self.size
-            spaceBehindMe = cell_idx - self.size
-        elif self.mouse_heading == 1:  # East
-            spaceInFrontOfMe = cell_idx + 1
-            spaceBehindMe = cell_idx - 1
-        elif self.mouse_heading == 2:  # South
-            spaceInFrontOfMe = cell_idx - self.size
-            spaceBehindMe = cell_idx + self.size
-        else:  # West
-            spaceInFrontOfMe = cell_idx - 1
-            spaceBehindMe = cell_idx + 1
+        # Get the current state of walls around the cell
+        wallInFront = 1 if self.read_sensor() < 10 else 0
 
-        # Have I been to the space in front of me before?
-        beenThere = False
-        if (self.get_cell_coordinates(spaceInFrontOfMe)) in self.visited_cells:
-            beenThere = True
-
-        # Check if there's a wall in front
-        wallInFront = False
-        if self.read_sensor() < 10:
-            wallInFront = 1
-
-        # Check if I'm blocked in and need to reverse (full 180)
-        blocked = False
         wallToTheLeft = -1
         wallToTheRight = -1
         wallBehindMe = -1
+
         if cell_idx in self.detected_walls:
             leftHeading = (self.mouse_heading + 3) % 4
             rightHeading = (self.mouse_heading + 1) % 4
             behindMeHeading = (self.mouse_heading + 2) % 4
 
-            wallToTheRight = self.detected_walls[cell_idx][rightHeading]
-            wallBehindMe = self.detected_walls[cell_idx][behindMeHeading]
-            wallToTheLeft = self.detected_walls[cell_idx][leftHeading]
-            print("NORTH HEADING:", wallInFront)
-            print("EAST HEADING: ", wallToTheRight)
-            print("SOUTH HEADING: ", wallBehindMe)
-            print("WEST HEADING: ", wallToTheLeft)
+            # Get wall status in each direction if known
+            if leftHeading in self.detected_walls[cell_idx]:
+                wallToTheLeft = self.detected_walls[cell_idx][leftHeading]
+            if rightHeading in self.detected_walls[cell_idx]:
+                wallToTheRight = self.detected_walls[cell_idx][rightHeading]
+            if behindMeHeading in self.detected_walls[cell_idx]:
+                wallBehindMe = self.detected_walls[cell_idx][behindMeHeading]
 
+        # Calculate adjacent cell indices
+        frontCellIdx = -1
+        leftCellIdx = -1
+        rightCellIdx = -1
+        backCellIdx = -1
+
+        # Calculate front cell
+        if self.mouse_heading == 0:  # North
+            frontCellIdx = cell_idx + self.size if cell_idx + self.size <= maxCell else -1
+            leftCellIdx = cell_idx - 1 if cell_idx % self.size > 0 else -1
+            rightCellIdx = cell_idx + 1 if (cell_idx + 1) % self.size > 0 else -1
+            backCellIdx = cell_idx - self.size if cell_idx - self.size >= 0 else -1
+        elif self.mouse_heading == 1:  # East
+            frontCellIdx = cell_idx + 1 if (cell_idx + 1) % self.size > 0 else -1
+            leftCellIdx = cell_idx + self.size if cell_idx + self.size <= maxCell else -1
+            rightCellIdx = cell_idx - self.size if cell_idx - self.size >= 0 else -1
+            backCellIdx = cell_idx - 1 if cell_idx % self.size > 0 else -1
+        elif self.mouse_heading == 2:  # South
+            frontCellIdx = cell_idx - self.size if cell_idx - self.size >= 0 else -1
+            leftCellIdx = cell_idx + 1 if (cell_idx + 1) % self.size > 0 else -1
+            rightCellIdx = cell_idx - 1 if cell_idx % self.size > 0 else -1
+            backCellIdx = cell_idx + self.size if cell_idx + self.size <= maxCell else -1
+        else:  # West
+            frontCellIdx = cell_idx - 1 if cell_idx % self.size > 0 else -1
+            leftCellIdx = cell_idx - self.size if cell_idx - self.size >= 0 else -1
+            rightCellIdx = cell_idx + self.size if cell_idx + self.size <= maxCell else -1
+            backCellIdx = cell_idx + 1 if (cell_idx + 1) % self.size > 0 else -1
+
+        # Check which adjacent cells have been visited
+        frontVisited = False
+        leftVisited = False
+        rightVisited = False
+        backVisited = False
+
+        if frontCellIdx != -1:
+            frontCoords = self.get_cell_coordinates(frontCellIdx)
+            if frontCoords in self.visited_cells:
+                frontVisited = True
+
+        if leftCellIdx != -1:
+            leftCoords = self.get_cell_coordinates(leftCellIdx)
+            if leftCoords in self.visited_cells:
+                leftVisited = True
+
+        if rightCellIdx != -1:
+            rightCoords = self.get_cell_coordinates(rightCellIdx)
+            if rightCoords in self.visited_cells:
+                rightVisited = True
+
+        if backCellIdx != -1:
+            backCoords = self.get_cell_coordinates(backCellIdx)
+            if backCoords in self.visited_cells:
+                backVisited = True
+
+        # Determine possible moves based on walls
         possibleMoves = []
-        if wallInFront in [0, -1]: possibleMoves.append(0)
-        if wallToTheRight in [0, -1]: possibleMoves.append(1)
-        if wallBehindMe in [0, -1]: possibleMoves.append(2)
-        if wallToTheLeft in [0, -1]: possibleMoves.append(3)
-        print("> Moves:  ", possibleMoves)
+        if wallInFront in [0, -1] and frontCellIdx != -1:
+            possibleMoves.append(('forward', frontVisited))
+        if wallToTheRight in [0, -1] and rightCellIdx != -1:
+            possibleMoves.append(('right', rightVisited))
+        if wallBehindMe in [0, -1] and backCellIdx != -1:
+            possibleMoves.append(('back', backVisited))
+        if wallToTheLeft in [0, -1] and leftCellIdx != -1:
+            possibleMoves.append(('left', leftVisited))
 
-        # Check if we're currently in a dead end spot, which we'll want to avoid later
-        if wallBehindMe == 1 and wallToTheLeft == 1 and wallToTheRight == 1:
-            self.deadendCells.append(cell_idx)
-
-        # If only 1 possible move, do it
+        # Check if we're currently in a dead end
         if len(possibleMoves) == 1:
-            if possibleMoves[0] == 0: self.move_forward()
-            elif possibleMoves[0] == 1: self.turn_right()
-            elif possibleMoves[0] == 2: self.turn_around()
-            else: self.turn_left()
+            if cell_idx not in self.deadendCells:
+                self.deadendCells.append(cell_idx)
+
+        # No possible moves (this shouldn't happen in a valid maze)
+        if not possibleMoves:
+            print("No possible moves! Turning around.")
+            self.turn_around()
             return
 
-        # Of the possible moves, pick one
-        if 0 in possibleMoves:
+        # Prioritize unexplored cells
+        unvisitedMoves = [move for move, visited in possibleMoves if not visited]
+
+        if unvisitedMoves:
+            # We have unexplored options - choose the first one
+            move = unvisitedMoves[0]
+        else:
+            # All options lead to visited cells - just pick the first one
+            move = possibleMoves[0][0]
+
+        # Execute the chosen move
+        print(f"Choosing move: {move}")
+        if move == 'forward':
             self.move_forward()
-            return
-
-        if possibleMoves[0] == 0: self.move_forward()
-        elif possibleMoves[0] == 1: self.turn_right()
-        elif possibleMoves[0] == 2: self.turn_around()
-        else: self.turn_left()
-        return
+        elif move == 'right':
+            self.turn_right()
+            self.move_forward()
+        elif move == 'left':
+            self.turn_left()
+            self.move_forward()
+        elif move == 'back':
+            self.turn_around()
+            self.move_forward()
 
     def export_to_cpp(self) -> Dict:
         """Export the current maze state to a format usable by the C++ code."""
