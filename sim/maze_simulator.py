@@ -123,6 +123,37 @@ class MazeSimulator:
         y = cell_idx // self.size
         return (x, y)
 
+    def update_adjacent_wall(self, cell_x: int, cell_y: int, direction: int, wall_exists: bool):
+        """Update the wall status for the adjacent cell in the opposite direction.
+
+        Args:
+            cell_x: X coordinate of the current cell
+            cell_y: Y coordinate of the current cell
+            direction: Direction of the wall from current cell (0=N, 1=E, 2=S, 3=W)
+            wall_exists: Whether the wall exists
+        """
+        # Calculate coordinates of the adjacent cell
+        adj_x, adj_y = cell_x, cell_y
+        if direction == 0:  # North
+            adj_y += 1
+        elif direction == 1:  # East
+            adj_x += 1
+        elif direction == 2:  # South
+            adj_y -= 1
+        else:  # West
+            adj_x -= 1
+
+        # Ensure the adjacent cell is within the maze bounds
+        if 0 <= adj_x < self.size and 0 <= adj_y < self.size:
+            # Get the opposite direction
+            opposite_direction = (direction + 2) % 4
+
+            # Update the wall for the adjacent cell
+            adj_cell_idx = self.get_cell_linear_index(adj_x, adj_y)
+            if adj_cell_idx not in self.detected_walls:
+                self.detected_walls[adj_cell_idx] = {}
+            self.detected_walls[adj_cell_idx][opposite_direction] = wall_exists
+
     def detect_wall(self, cell_x: int, cell_y: int, direction: int) -> bool:
         """Check if there is a wall in the specified direction from the given cell."""
         # Make sure the cell is within bounds
@@ -138,6 +169,7 @@ class MazeSimulator:
             if cell_idx not in self.detected_walls:
                 self.detected_walls[cell_idx] = {}
             self.detected_walls[cell_idx][direction] = wall_exists
+            self.update_adjacent_wall(cell_x, cell_y, direction, wall_exists)
 
         # Return wall status in the specified direction
         return wall_exists
